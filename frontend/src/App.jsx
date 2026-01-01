@@ -11,6 +11,8 @@ import { useNavigate } from 'react-router-dom';
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
+import PlantsPage from './pages/PlantsPage';
+import AddPlantPage from './pages/AddPlantPage';
 
 // Components
 import ProtectedRoute from './components/common/ProtectedRoute';
@@ -83,6 +85,12 @@ function Navigation() {
 
         {isAuthenticated ? (
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+            <Button
+              color="inherit"
+              onClick={() => navigate('/plants')}
+            >
+              My Plants
+            </Button>
             <Typography variant="body2" sx={{ display: { xs: 'none', sm: 'block' } }}>
               {user?.email}
             </Typography>
@@ -122,14 +130,17 @@ function AppContent() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
 
-        {/* Protected routes (for future sprints) */}
-        {/*
+        {/* Protected routes - Plants */}
         <Route path="/plants" element={
           <ProtectedRoute>
             <PlantsPage />
           </ProtectedRoute>
         } />
-        */}
+        <Route path="/plants/add" element={
+          <ProtectedRoute>
+            <AddPlantPage />
+          </ProtectedRoute>
+        } />
       </Routes>
     </Box>
   );
