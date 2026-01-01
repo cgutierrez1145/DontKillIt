@@ -47,9 +47,13 @@ async def health_check():
     }
 
 
-# Include routers here (will add as we build them)
-# from app.routers import auth, plants, watering, feeding, diagnosis, reminders
-# app.include_router(auth.router, prefix="/api/v1/auth", tags=["auth"])
+# Include routers
+from app.routers import auth
+
+app.include_router(auth.router, prefix="/api/v1/auth", tags=["Authentication"])
+
+# More routers will be added in future sprints:
+# from app.routers import plants, watering, feeding, diagnosis, reminders
 # app.include_router(plants.router, prefix="/api/v1/plants", tags=["plants"])
 # app.include_router(watering.router, prefix="/api/v1/watering", tags=["watering"])
 # app.include_router(feeding.router, prefix="/api/v1/feeding", tags=["feeding"])
