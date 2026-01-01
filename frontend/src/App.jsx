@@ -75,7 +75,13 @@ function Navigation() {
   return (
     <AppBar position="static" elevation={0}>
       <Toolbar>
-        <Spa sx={{ mr: 2 }} />
+        <Box
+          component="img"
+          src="/logo.png"
+          alt="DontKillIt"
+          sx={{ height: 40, mr: 2, cursor: 'pointer' }}
+          onClick={() => navigate('/')}
+        />
         <Typography
           variant="h6"
           component="div"

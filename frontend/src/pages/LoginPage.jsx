@@ -44,7 +44,14 @@ function LoginPage() {
         <Paper elevation={3} sx={{ p: 4 }}>
           <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             <Box
+              component="img"
+              src="/logo.png"
+              alt="DontKillIt"
+              sx={{ height: 100, mb: 2 }}
+            />
+            <Box
               sx={{
+                display: 'none', // Hide the old lock icon
                 width: 56,
                 height: 56,
                 borderRadius: '50%',
