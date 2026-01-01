@@ -155,4 +155,31 @@ export const feedingAPI = {
   },
 };
 
+// Diagnosis API calls
+export const diagnosisAPI = {
+  uploadDiagnosis: async (plantId, formData) => {
+    const response = await api.post(`/plants/${plantId}/diagnosis`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return response.data;
+  },
+
+  getPlantDiagnoses: async (plantId, limit = 50) => {
+    const response = await api.get(`/plants/${plantId}/diagnosis?limit=${limit}`);
+    return response.data;
+  },
+
+  getDiagnosis: async (photoId) => {
+    const response = await api.get(`/diagnosis/${photoId}`);
+    return response.data;
+  },
+
+  deleteDiagnosis: async (photoId) => {
+    const response = await api.delete(`/diagnosis/${photoId}`);
+    return response.data;
+  },
+};
+
 export default api;

@@ -11,7 +11,7 @@ import {
   Alert,
   IconButton,
 } from '@mui/material';
-import { Edit as EditIcon, ArrowBack as BackIcon, LocationOn as LocationIcon } from '@mui/icons-material';
+import { Edit as EditIcon, ArrowBack as BackIcon, LocationOn as LocationIcon, LocalHospital as DiagnoseIcon } from '@mui/icons-material';
 import { usePlant } from '../hooks/usePlants';
 import ScheduleCard from '../components/schedules/ScheduleCard';
 
@@ -22,6 +22,10 @@ export default function PlantDetailPage() {
 
   const handleEdit = () => {
     navigate(`/plants/${id}/edit`);
+  };
+
+  const handleDiagnose = () => {
+    navigate(`/plants/${id}/diagnosis`);
   };
 
   const handleBack = () => {
@@ -65,6 +69,13 @@ export default function PlantDetailPage() {
         <Typography variant="h3" component="h1" sx={{ flexGrow: 1 }}>
           {plant.name}
         </Typography>
+        <Button
+          variant="outlined"
+          startIcon={<DiagnoseIcon />}
+          onClick={handleDiagnose}
+        >
+          Diagnose Problem
+        </Button>
         <Button
           variant="contained"
           startIcon={<EditIcon />}
