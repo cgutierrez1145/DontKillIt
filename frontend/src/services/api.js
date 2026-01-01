@@ -61,7 +61,7 @@ export const authAPI = {
   },
 };
 
-// Plants API calls (will be used in future sprints)
+// Plants API calls
 export const plantsAPI = {
   getAll: async () => {
     const response = await api.get('/plants');
@@ -85,6 +85,72 @@ export const plantsAPI = {
 
   delete: async (id) => {
     const response = await api.delete(`/plants/${id}`);
+    return response.data;
+  },
+};
+
+// Watering API calls
+export const wateringAPI = {
+  getSchedule: async (plantId) => {
+    const response = await api.get(`/plants/${plantId}/watering/schedule`);
+    return response.data;
+  },
+
+  createSchedule: async (plantId, scheduleData) => {
+    const response = await api.post(`/plants/${plantId}/watering/schedule`, scheduleData);
+    return response.data;
+  },
+
+  updateSchedule: async (plantId, scheduleData) => {
+    const response = await api.put(`/plants/${plantId}/watering/schedule`, scheduleData);
+    return response.data;
+  },
+
+  deleteSchedule: async (plantId) => {
+    const response = await api.delete(`/plants/${plantId}/watering/schedule`);
+    return response.data;
+  },
+
+  recordWatering: async (plantId, wateringData) => {
+    const response = await api.post(`/plants/${plantId}/watering/water`, wateringData);
+    return response.data;
+  },
+
+  getHistory: async (plantId, limit = 50) => {
+    const response = await api.get(`/plants/${plantId}/watering/history?limit=${limit}`);
+    return response.data;
+  },
+};
+
+// Feeding API calls
+export const feedingAPI = {
+  getSchedule: async (plantId) => {
+    const response = await api.get(`/plants/${plantId}/feeding/schedule`);
+    return response.data;
+  },
+
+  createSchedule: async (plantId, scheduleData) => {
+    const response = await api.post(`/plants/${plantId}/feeding/schedule`, scheduleData);
+    return response.data;
+  },
+
+  updateSchedule: async (plantId, scheduleData) => {
+    const response = await api.put(`/plants/${plantId}/feeding/schedule`, scheduleData);
+    return response.data;
+  },
+
+  deleteSchedule: async (plantId) => {
+    const response = await api.delete(`/plants/${plantId}/feeding/schedule`);
+    return response.data;
+  },
+
+  recordFeeding: async (plantId, feedingData) => {
+    const response = await api.post(`/plants/${plantId}/feeding/feed`, feedingData);
+    return response.data;
+  },
+
+  getHistory: async (plantId, limit = 50) => {
+    const response = await api.get(`/plants/${plantId}/feeding/history?limit=${limit}`);
     return response.data;
   },
 };

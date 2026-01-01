@@ -13,6 +13,7 @@ import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import PlantsPage from './pages/PlantsPage';
 import AddPlantPage from './pages/AddPlantPage';
+import PlantDetailPage from './pages/PlantDetailPage';
 
 // Components
 import ProtectedRoute from './components/common/ProtectedRoute';
@@ -139,6 +140,11 @@ function AppContent() {
         <Route path="/plants/add" element={
           <ProtectedRoute>
             <AddPlantPage />
+          </ProtectedRoute>
+        } />
+        <Route path="/plants/:id" element={
+          <ProtectedRoute>
+            <PlantDetailPage />
           </ProtectedRoute>
         } />
       </Routes>
