@@ -1,10 +1,19 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
-import { CssBaseline, AppBar, Toolbar, Typography, Box } from '@mui/material';
+import { CssBaseline, AppBar, Toolbar, Typography, Box, Button } from '@mui/material';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from 'react-hot-toast';
-import { Spa } from '@mui/icons-material';
+import { Spa, Login, Logout } from '@mui/icons-material';
+import { AuthProvider, useAuth } from './context/AuthContext';
+import { useNavigate } from 'react-router-dom';
+
+// Pages
 import HomePage from './pages/HomePage';
+import LoginPage from './pages/LoginPage';
+import RegisterPage from './pages/RegisterPage';
+
+// Components
+import ProtectedRoute from './components/common/ProtectedRoute';
 
 // Create React Query client
 const queryClient = new QueryClient({
@@ -49,29 +58,92 @@ const theme = createTheme({
   }
 });
 
+// Navigation component that uses auth context
+function Navigation() {
+  const { isAuthenticated, user, logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    await logout();
+    navigate('/login');
+  };
+
+  return (
+    <AppBar position="static" elevation={0}>
+      <Toolbar>
+        <Spa sx={{ mr: 2 }} />
+        <Typography
+          variant="h6"
+          component="div"
+          sx={{ flexGrow: 1, cursor: 'pointer' }}
+          onClick={() => navigate('/')}
+        >
+          DontKillIt
+        </Typography>
+
+        {isAuthenticated ? (
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+            <Typography variant="body2" sx={{ display: { xs: 'none', sm: 'block' } }}>
+              {user?.email}
+            </Typography>
+            <Button
+              color="inherit"
+              startIcon={<Logout />}
+              onClick={handleLogout}
+            >
+              Logout
+            </Button>
+          </Box>
+        ) : (
+          <Box sx={{ display: 'flex', gap: 1 }}>
+            <Button
+              color="inherit"
+              startIcon={<Login />}
+              onClick={() => navigate('/login')}
+            >
+              Login
+            </Button>
+          </Box>
+        )}
+      </Toolbar>
+    </AppBar>
+  );
+}
+
+// Main App component
+function AppContent() {
+  return (
+    <Box sx={{ flexGrow: 1 }}>
+      <Navigation />
+
+      {/* Routes */}
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
+
+        {/* Protected routes (for future sprints) */}
+        {/*
+        <Route path="/plants" element={
+          <ProtectedRoute>
+            <PlantsPage />
+          </ProtectedRoute>
+        } />
+        */}
+      </Routes>
+    </Box>
+  );
+}
+
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider theme={theme}>
         <CssBaseline />
         <BrowserRouter>
-          <Box sx={{ flexGrow: 1 }}>
-            {/* Navigation Bar */}
-            <AppBar position="static" elevation={0}>
-              <Toolbar>
-                <Spa sx={{ mr: 2 }} />
-                <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-                  DontKillIt
-                </Typography>
-              </Toolbar>
-            </AppBar>
-
-            {/* Routes */}
-            <Routes>
-              <Route path="/" element={<HomePage />} />
-              {/* More routes will be added in future sprints */}
-            </Routes>
-          </Box>
+          <AuthProvider>
+            <AppContent />
+          </AuthProvider>
         </BrowserRouter>
 
         {/* Toast notifications */}
