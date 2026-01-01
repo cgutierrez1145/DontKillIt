@@ -1,7 +1,9 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from app.config import settings
+from app.utils.auth import get_current_user
+from app.models.user import User
 import os
 
 # Create FastAPI application
@@ -12,6 +14,19 @@ app = FastAPI(
     docs_url="/docs",
     redoc_url="/redoc"
 )
+
+# Import and start scheduler
+from app.services.scheduler import scheduler_service
+
+@app.on_event("startup")
+async def startup_event():
+    """Start background scheduler on app startup."""
+    scheduler_service.start_reminder_job()
+
+@app.on_event("shutdown")
+async def shutdown_event():
+    """Shutdown scheduler on app shutdown."""
+    scheduler_service.shutdown()
 
 # Configure CORS
 app.add_middleware(
@@ -45,6 +60,13 @@ async def health_check():
         "app": settings.APP_NAME,
         "version": settings.VERSION
     }
+
+
+@app.post("/api/v1/reminders/trigger")
+async def trigger_reminders(current_user: User = Depends(get_current_user)):
+    """Manually trigger reminder check (for testing)."""
+    result = scheduler_service.trigger_reminder_check_now()
+    return result
 
 
 # Include routers
