@@ -1,0 +1,15 @@
+{
+  "appId": "com.dontkillitapp.plants",
+  "appName": "DontKillIt",
+  "webDir": "dist",
+  "server": {
+    "androidScheme": "https",
+    "iosScheme": "https",
+    "hostname": "app.dontkillitapp.local"
+  },
+  "plugins": {
+    "Camera": {
+      "saveToGallery": true
+    }
+  }
+}

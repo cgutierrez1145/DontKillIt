@@ -20,7 +20,17 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
 
     # CORS
-    ALLOWED_ORIGINS: List[str] = ["http://localhost:5173", "http://localhost:3000"]
+    ALLOWED_ORIGINS: List[str] = [
+        "http://localhost:5173",
+        "http://localhost:3000",
+        "capacitor://localhost",
+        "ionic://localhost",
+        "http://localhost",
+        "https://app.dontkillitapp.local",
+        "capacitor://app.dontkillitapp.local",
+        "http://10.0.0.78:5173",
+        "http://10.0.0.78:8000"
+    ]
 
     # App Settings
     DEBUG: bool = True
