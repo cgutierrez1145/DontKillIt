@@ -70,17 +70,17 @@ async def trigger_reminders(current_user: User = Depends(get_current_user)):
 
 
 # Include routers
-from app.routers import auth, plants, watering, feeding, diagnosis
+from app.routers import auth, plants, watering, feeding, diagnosis, identification, care, rooms, tips
 
 app.include_router(auth.router, prefix="/api/v1/auth", tags=["Authentication"])
 app.include_router(plants.router, prefix="/api/v1/plants", tags=["Plants"])
 app.include_router(watering.router, prefix="/api/v1", tags=["Watering"])
 app.include_router(feeding.router, prefix="/api/v1", tags=["Feeding"])
 app.include_router(diagnosis.router, prefix="/api/v1", tags=["Diagnosis"])
-
-# More routers will be added in future sprints:
-# from app.routers import reminders
-# app.include_router(reminders.router, prefix="/api/v1/reminders", tags=["reminders"])
+app.include_router(identification.router, prefix="/api/v1", tags=["Plant Identification"])
+app.include_router(care.router, prefix="/api/v1", tags=["Care Recommendations"])
+app.include_router(rooms.router, prefix="/api/v1", tags=["Rooms"])
+app.include_router(tips.router, prefix="/api/v1", tags=["Tips"])
 
 
 if __name__ == "__main__":
