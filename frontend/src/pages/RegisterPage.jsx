@@ -65,21 +65,7 @@ function RegisterPage() {
               alt="DontKillIt"
               sx={{ height: 100, mb: 2 }}
             />
-            <Box
-              sx={{
-                display: 'none', // Hide the old icon
-                width: 56,
-                height: 56,
-                borderRadius: '50%',
-                bgcolor: 'secondary.main',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                mb: 2
-              }}
-            >
-              <PersonAdd sx={{ color: 'white', fontSize: 32 }} />
-            </Box>
+            {/* Logo is shown above, person icon hidden */}
 
             <Typography component="h1" variant="h4" gutterBottom>
               Sign Up

@@ -49,21 +49,7 @@ function LoginPage() {
               alt="DontKillIt"
               sx={{ height: 100, mb: 2 }}
             />
-            <Box
-              sx={{
-                display: 'none', // Hide the old lock icon
-                width: 56,
-                height: 56,
-                borderRadius: '50%',
-                bgcolor: 'primary.main',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                mb: 2
-              }}
-            >
-              <LockOutlined sx={{ color: 'white', fontSize: 32 }} />
-            </Box>
+            {/* Logo is shown above, lock icon hidden */}
 
             <Typography component="h1" variant="h4" gutterBottom>
               Sign In
