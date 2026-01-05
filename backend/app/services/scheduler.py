@@ -1,5 +1,6 @@
 """Scheduler service for running periodic tasks."""
 import logging
+import asyncio
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.cron import CronTrigger
 from app.database import SessionLocal
@@ -33,19 +34,20 @@ class SchedulerService:
         logger.info("Running scheduled reminder check...")
         db = SessionLocal()
         try:
-            count = notification_service.check_and_send_reminders(db)
+            # Run async function in sync context
+            count = asyncio.run(notification_service.check_and_send_reminders(db))
             logger.info(f"Reminder check complete. Sent {count} reminders.")
         except Exception as e:
             logger.error(f"Error in reminder check: {e}")
         finally:
             db.close()
 
-    def trigger_reminder_check_now(self):
+    async def trigger_reminder_check_now(self):
         """Manually trigger reminder check (for testing)."""
         logger.info("Manual reminder check triggered")
         db = SessionLocal()
         try:
-            count = notification_service.check_and_send_reminders(db)
+            count = await notification_service.check_and_send_reminders(db)
             return {"success": True, "reminders_sent": count}
         except Exception as e:
             logger.error(f"Error in manual reminder check: {e}")

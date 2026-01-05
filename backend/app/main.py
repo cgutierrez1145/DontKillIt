@@ -65,12 +65,12 @@ async def health_check():
 @app.post("/api/v1/reminders/trigger")
 async def trigger_reminders(current_user: User = Depends(get_current_user)):
     """Manually trigger reminder check (for testing)."""
-    result = scheduler_service.trigger_reminder_check_now()
+    result = await scheduler_service.trigger_reminder_check_now()
     return result
 
 
 # Include routers
-from app.routers import auth, plants, watering, feeding, diagnosis, identification, care, rooms, tips
+from app.routers import auth, plants, watering, feeding, diagnosis, identification, care, rooms, tips, notifications
 
 app.include_router(auth.router, prefix="/api/v1/auth", tags=["Authentication"])
 app.include_router(plants.router, prefix="/api/v1/plants", tags=["Plants"])
@@ -81,6 +81,7 @@ app.include_router(identification.router, prefix="/api/v1", tags=["Plant Identif
 app.include_router(care.router, prefix="/api/v1", tags=["Care Recommendations"])
 app.include_router(rooms.router, prefix="/api/v1", tags=["Rooms"])
 app.include_router(tips.router, prefix="/api/v1", tags=["Tips"])
+app.include_router(notifications.router, prefix="/api/v1", tags=["Notifications"])
 
 
 if __name__ == "__main__":

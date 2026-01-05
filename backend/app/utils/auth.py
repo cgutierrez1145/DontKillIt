@@ -80,3 +80,26 @@ async def get_current_user(
         raise credentials_exception
 
     return user
+
+
+async def get_websocket_user(token: str, db: Session) -> Optional[User]:
+    """
+    Authenticate user from WebSocket token.
+    Returns None if authentication fails.
+    """
+    try:
+        # Decode token
+        payload = decode_access_token(token)
+        if payload is None:
+            return None
+
+        # Get user email from token
+        email: str = payload.get("sub")
+        if email is None:
+            return None
+
+        # Get user from database
+        user = db.query(User).filter(User.email == email).first()
+        return user
+    except Exception:
+        return None

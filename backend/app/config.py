@@ -44,6 +44,8 @@ class Settings(BaseSettings):
     # Notifications
     FROM_EMAIL: str = "noreply@dontkillit.com"
     NOTIFICATION_CHECK_INTERVAL_HOURS: int = 1
+    FCM_SERVER_KEY: str = ""  # Firebase Cloud Messaging server key
+    FCM_PROJECT_ID: str = ""  # Firebase project ID
 
     class Config:
         env_file = ".env"

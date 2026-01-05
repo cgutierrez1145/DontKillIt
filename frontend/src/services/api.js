@@ -182,4 +182,61 @@ export const diagnosisAPI = {
   },
 };
 
+// Notifications API calls
+export const notificationsAPI = {
+  getAll: async (unreadOnly = false) => {
+    const response = await api.get('/notifications', {
+      params: { unread_only: unreadOnly }
+    });
+    return response.data;
+  },
+
+  getUnreadCount: async () => {
+    const response = await api.get('/notifications/unread-count');
+    return response.data;
+  },
+
+  markRead: async (notificationIds) => {
+    const response = await api.post('/notifications/mark-read', {
+      notification_ids: notificationIds
+    });
+    return response.data;
+  },
+
+  markAllRead: async () => {
+    const response = await api.post('/notifications/mark-all-read');
+    return response.data;
+  },
+
+  delete: async (notificationId) => {
+    const response = await api.delete(`/notifications/${notificationId}`);
+    return response.data;
+  },
+
+  getPreferences: async () => {
+    const response = await api.get('/notifications/preferences');
+    return response.data;
+  },
+
+  updatePreferences: async (preferences) => {
+    const response = await api.put('/notifications/preferences', preferences);
+    return response.data;
+  },
+
+  registerPushToken: async (tokenData) => {
+    const response = await api.post('/notifications/tokens', tokenData);
+    return response.data;
+  },
+
+  getPushTokens: async () => {
+    const response = await api.get('/notifications/tokens');
+    return response.data;
+  },
+
+  unregisterPushToken: async (deviceId) => {
+    const response = await api.delete(`/notifications/tokens/${deviceId}`);
+    return response.data;
+  },
+};
+
 export default api;

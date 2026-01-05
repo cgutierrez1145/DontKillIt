@@ -15,9 +15,16 @@ import PlantsPage from './pages/PlantsPage';
 import AddPlantPage from './pages/AddPlantPage';
 import PlantDetailPage from './pages/PlantDetailPage';
 import DiagnosisPage from './pages/DiagnosisPage';
+import SettingsPage from './pages/SettingsPage';
 
 // Components
 import ProtectedRoute from './components/common/ProtectedRoute';
+import NotificationCenter from './components/notifications/NotificationCenter';
+
+// Hooks
+import { usePushNotifications } from './hooks/usePushNotifications';
+import { useWebSocket } from './hooks/useWebSocket';
+import { useNotifications } from './hooks/useNotifications';
 
 // Create React Query client
 const queryClient = new QueryClient({
@@ -99,6 +106,7 @@ function Navigation() {
             >
               My Plants
             </Button>
+            <NotificationCenter />
             <Typography variant="body2" sx={{ display: { xs: 'none', sm: 'block' } }}>
               {user?.email}
             </Typography>
@@ -128,6 +136,16 @@ function Navigation() {
 
 // Main App component
 function AppContent() {
+  const { addNotification } = useNotifications();
+
+  // Initialize push notifications (mobile only)
+  usePushNotifications();
+
+  // Initialize WebSocket for real-time notifications
+  useWebSocket((notification) => {
+    addNotification(notification);
+  });
+
   return (
     <Box sx={{ flexGrow: 1 }}>
       <Navigation />
@@ -157,6 +175,11 @@ function AppContent() {
         <Route path="/plants/:id/diagnosis" element={
           <ProtectedRoute>
             <DiagnosisPage />
+          </ProtectedRoute>
+        } />
+        <Route path="/settings" element={
+          <ProtectedRoute>
+            <SettingsPage />
           </ProtectedRoute>
         } />
       </Routes>
