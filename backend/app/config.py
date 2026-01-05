@@ -19,17 +19,18 @@ class Settings(BaseSettings):
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
 
-    # CORS
+    # CORS - Allow mobile app origins
     ALLOWED_ORIGINS: List[str] = [
         "http://localhost:5173",
         "http://localhost:3000",
+        "http://localhost",
         "capacitor://localhost",
         "ionic://localhost",
-        "http://localhost",
         "https://app.dontkillitapp.local",
         "capacitor://app.dontkillitapp.local",
         "http://10.0.0.78:5173",
-        "http://10.0.0.78:8000"
+        "http://10.0.0.78:8000",
+        "http://10.0.0.231:5173"
     ]
 
     # App Settings
