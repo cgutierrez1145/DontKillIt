@@ -19,6 +19,7 @@ function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
   // Redirect if already authenticated
   if (isAuthenticated) {
@@ -27,6 +28,7 @@ function LoginPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError('');
     setLoading(true);
 
     const result = await login(email, password);
@@ -35,6 +37,8 @@ function LoginPage() {
 
     if (result.success) {
       navigate('/');
+    } else {
+      setError(result.error || 'Login failed. Please check your credentials.');
     }
   };
 
@@ -58,6 +62,14 @@ function LoginPage() {
             <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
               Welcome back to DontKillIt
             </Typography>
+
+            {error && (
+              <Box sx={{ width: '100%', mb: 2, p: 2, bgcolor: 'error.light', borderRadius: 1 }}>
+                <Typography color="error.dark" variant="body2">
+                  {error}
+                </Typography>
+              </Box>
+            )}
 
             <Box component="form" onSubmit={handleSubmit} sx={{ width: '100%' }}>
               <TextField

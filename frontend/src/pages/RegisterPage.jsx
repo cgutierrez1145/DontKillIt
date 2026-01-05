@@ -75,6 +75,14 @@ function RegisterPage() {
               Create your DontKillIt account
             </Typography>
 
+            {error && (
+              <Box sx={{ width: '100%', mb: 2, p: 2, bgcolor: 'error.light', borderRadius: 1 }}>
+                <Typography color="error.dark" variant="body2">
+                  {error}
+                </Typography>
+              </Box>
+            )}
+
             <Box component="form" onSubmit={handleSubmit} sx={{ width: '100%' }}>
               <TextField
                 margin="normal"
@@ -102,6 +110,7 @@ function RegisterPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 disabled={loading}
+                error={error.includes('8 characters')}
                 helperText="Must be at least 8 characters"
               />
 
@@ -118,7 +127,7 @@ function RegisterPage() {
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 disabled={loading}
                 error={!!error}
-                helperText={error}
+                helperText={error || "Re-enter your password"}
               />
 
               <Button
