@@ -41,3 +41,7 @@ uploads/photos/*
 # Logs
 logs/
 *.log
+
+# Sensitive files
+json/
+API Key (Resend)/

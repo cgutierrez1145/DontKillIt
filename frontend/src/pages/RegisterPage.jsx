@@ -62,7 +62,7 @@ function RegisterPage() {
             <Box
               component="img"
               src="/logo.png"
-              alt="DontKillIt"
+              alt="Don't Kill It!"
               sx={{ height: 100, mb: 2 }}
             />
             {/* Logo is shown above, person icon hidden */}
@@ -72,7 +72,7 @@ function RegisterPage() {
             </Typography>
 
             <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-              Create your DontKillIt account
+              Create your Don't Kill It! account
             </Typography>
 
             {error && (

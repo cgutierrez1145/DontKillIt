@@ -50,7 +50,7 @@ function LoginPage() {
             <Box
               component="img"
               src="/logo.png"
-              alt="DontKillIt"
+              alt="Don't Kill It!"
               sx={{ height: 100, mb: 2 }}
             />
             {/* Logo is shown above, lock icon hidden */}

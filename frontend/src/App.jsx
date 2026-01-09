@@ -87,7 +87,7 @@ function Navigation() {
         <Box
           component="img"
           src="/logo.png"
-          alt="DontKillIt"
+          alt="Don't Kill It!"
           sx={{ height: 40, mr: 2, cursor: 'pointer' }}
           onClick={() => navigate('/')}
         />

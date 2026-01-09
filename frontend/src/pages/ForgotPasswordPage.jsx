@@ -44,7 +44,7 @@ function ForgotPasswordPage() {
             <Box
               component="img"
               src="/logo.png"
-              alt="DontKillIt"
+              alt="Don't Kill It!"
               sx={{ height: 80, mb: 2 }}
             />
 

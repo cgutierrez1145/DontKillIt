@@ -46,7 +46,7 @@ function HomePage() {
           <Box
             component="img"
             src="/logo.png"
-            alt="DontKillIt"
+            alt="Don't Kill It!"
             sx={{ height: 150, mb: 2 }}
           />
           <Typography variant="h2" component="h1" gutterBottom sx={{ fontWeight: 700 }}>
