@@ -3,11 +3,15 @@ from pathlib import Path
 
 load_dotenv(dotenv_path=Path(__file__).resolve().parents[1] / ".env")
 
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI, Depends, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
+from fastapi.responses import JSONResponse
+from slowapi import _rate_limit_exceeded_handler
+from slowapi.errors import RateLimitExceeded
 from app.config import settings
 from app.utils.auth import get_current_user
+from app.utils.rate_limit import limiter
 from app.models.user import User
 import os
 
@@ -19,6 +23,10 @@ app = FastAPI(
     docs_url="/docs",
     redoc_url="/redoc"
 )
+
+# Add rate limiter to app state and register exception handler
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 # Import and start scheduler
 from app.services.scheduler import scheduler_service
@@ -48,7 +56,8 @@ if os.path.exists(settings.UPLOAD_DIR):
 
 
 @app.get("/")
-async def root():
+@limiter.limit(settings.RATE_LIMIT_DEFAULT)
+async def root(request: Request):
     """Root endpoint with API information."""
     return {
         "message": "Welcome to DontKillIt Plant Care API",
@@ -58,7 +67,8 @@ async def root():
 
 
 @app.get("/api/v1/health")
-async def health_check():
+@limiter.limit(settings.RATE_LIMIT_DEFAULT)
+async def health_check(request: Request):
     """Health check endpoint."""
     return {
         "status": "healthy",
@@ -68,7 +78,8 @@ async def health_check():
 
 
 @app.post("/api/v1/reminders/trigger")
-async def trigger_reminders(current_user: User = Depends(get_current_user)):
+@limiter.limit(settings.RATE_LIMIT_DEFAULT)
+async def trigger_reminders(request: Request, current_user: User = Depends(get_current_user)):
     """Manually trigger reminder check (for testing)."""
     result = await scheduler_service.trigger_reminder_check_now()
     return result

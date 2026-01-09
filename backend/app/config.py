@@ -48,9 +48,15 @@ class Settings(BaseSettings):
     FCM_SERVER_KEY: str = ""  # Firebase Cloud Messaging server key
     FCM_PROJECT_ID: str = ""  # Firebase project ID
 
+    # Rate Limiting
+    RATE_LIMIT_DEFAULT: str = "100/minute"  # General API rate limit
+    RATE_LIMIT_AUTH: str = "5/minute"  # Stricter limit for auth endpoints
+    RATE_LIMIT_STORAGE_TYPE: str = "memory"  # Use "redis" in production with multiple workers
+
     class Config:
         env_file = ".env"
         case_sensitive = True
+        extra = "ignore"  # Ignore extra env vars like POSTGRES_* used by docker-compose
 
 
 settings = Settings()

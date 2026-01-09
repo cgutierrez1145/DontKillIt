@@ -11,13 +11,16 @@ from app.schemas.auth import (
     ResetPasswordRequest, ResetPasswordResponse
 )
 from app.utils.auth import get_password_hash, verify_password, create_access_token, get_current_user
+from app.utils.rate_limit import limiter
+from app.config import settings
 from app.services.email_service import email_service
 
 router = APIRouter()
 
 
 @router.post("/register", response_model=UserWithToken, status_code=status.HTTP_201_CREATED)
-async def register(user_data: UserRegister, db: Session = Depends(get_db)):
+@limiter.limit(settings.RATE_LIMIT_AUTH)
+async def register(request: Request, user_data: UserRegister, db: Session = Depends(get_db)):
     """
     Register a new user.
 
@@ -54,7 +57,8 @@ async def register(user_data: UserRegister, db: Session = Depends(get_db)):
 
 
 @router.post("/login", response_model=UserWithToken)
-async def login(user_data: UserLogin, db: Session = Depends(get_db)):
+@limiter.limit(settings.RATE_LIMIT_AUTH)
+async def login(request: Request, user_data: UserLogin, db: Session = Depends(get_db)):
     """
     Login with email and password.
 
@@ -103,9 +107,10 @@ async def logout():
 
 
 @router.post("/forgot-password", response_model=ForgotPasswordResponse)
+@limiter.limit(settings.RATE_LIMIT_AUTH)
 async def forgot_password(
-    request: ForgotPasswordRequest,
     http_request: Request,
+    request: ForgotPasswordRequest,
     db: Session = Depends(get_db)
 ):
     """
@@ -165,7 +170,8 @@ async def forgot_password(
 
 
 @router.post("/reset-password", response_model=ResetPasswordResponse)
-async def reset_password(request: ResetPasswordRequest, db: Session = Depends(get_db)):
+@limiter.limit(settings.RATE_LIMIT_AUTH)
+async def reset_password(http_request: Request, request: ResetPasswordRequest, db: Session = Depends(get_db)):
     """
     Reset password using a reset token.
 
