@@ -3,17 +3,24 @@ from pathlib import Path
 
 load_dotenv(dotenv_path=Path(__file__).resolve().parents[1] / ".env")
 
+import time
 from fastapi import FastAPI, Depends, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import JSONResponse
 from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
+from starlette.middleware.base import BaseHTTPMiddleware
 from app.config import settings
 from app.utils.auth import get_current_user
 from app.utils.rate_limit import limiter
+from app.utils.logging_config import setup_logging, get_logger
 from app.models.user import User
 import os
+
+# Initialize logging
+setup_logging()
+logger = get_logger(__name__)
 
 # Create FastAPI application
 app = FastAPI(
@@ -28,18 +35,47 @@ app = FastAPI(
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
+
+# Request logging middleware
+class RequestLoggingMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request: Request, call_next):
+        start_time = time.time()
+        response = await call_next(request)
+        duration_ms = (time.time() - start_time) * 1000
+
+        # Skip logging for health checks and static files
+        path = request.url.path
+        if path not in ["/api/v1/health", "/"] and not path.startswith("/photos"):
+            logger.info(
+                f"{request.method} {path} - {response.status_code} - {duration_ms:.1f}ms"
+            )
+
+        return response
+
+
+app.add_middleware(RequestLoggingMiddleware)
+
+
 # Import and start scheduler
 from app.services.scheduler import scheduler_service
+
 
 @app.on_event("startup")
 async def startup_event():
     """Start background scheduler on app startup."""
+    logger.info(f"Starting {settings.APP_NAME} v{settings.VERSION}")
+    logger.info(f"Debug mode: {settings.DEBUG}")
     scheduler_service.start_reminder_job()
+    logger.info("Application startup complete")
+
 
 @app.on_event("shutdown")
 async def shutdown_event():
     """Shutdown scheduler on app shutdown."""
+    logger.info("Shutting down application...")
     scheduler_service.shutdown()
+    logger.info("Application shutdown complete")
+
 
 # Configure CORS
 app.add_middleware(

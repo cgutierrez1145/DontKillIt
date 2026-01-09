@@ -3,6 +3,9 @@ from PIL import Image
 import numpy as np
 from typing import Dict
 import os
+from app.utils.logging_config import get_logger
+
+logger = get_logger(__name__)
 
 
 class RoomAnalysisService:
@@ -103,7 +106,7 @@ class RoomAnalysisService:
                 }
 
         except Exception as e:
-            print(f"Room analysis error: {e}")
+            logger.error(f"Room analysis error: {e}")
             return {
                 'lighting_score': None,
                 'category': None,

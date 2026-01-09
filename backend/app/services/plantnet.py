@@ -2,6 +2,9 @@
 import httpx
 from typing import Dict, List, Optional
 from app.config import settings
+from app.utils.logging_config import get_logger
+
+logger = get_logger(__name__)
 
 
 class PlantNetService:
@@ -120,7 +123,7 @@ class PlantNetService:
             }
         except Exception as e:
             # Fall back to mock data if API call fails
-            print(f"PlantNet API error: {e}")
+            logger.error(f"PlantNet API error: {e}")
             return self._get_mock_identification(image_path)
 
     def _get_mock_identification(self, image_path: str) -> Dict:

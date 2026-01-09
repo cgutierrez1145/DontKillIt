@@ -1,5 +1,8 @@
 import resend
 from app.config import settings
+from app.utils.logging_config import get_logger
+
+logger = get_logger(__name__)
 
 
 class EmailService:
@@ -22,7 +25,7 @@ class EmailService:
             True if email sent successfully, False otherwise
         """
         if not settings.RESEND_API_KEY:
-            print(f"[EMAIL SERVICE] No RESEND_API_KEY configured. Reset token for {to_email}: {reset_token}")
+            logger.warning(f"No RESEND_API_KEY configured. Reset token for {to_email}: {reset_token}")
             return False
 
         if not reset_url:
@@ -93,11 +96,11 @@ class EmailService:
             }
 
             response = resend.Emails.send(params)
-            print(f"[EMAIL SERVICE] Password reset email sent to {to_email}. ID: {response.get('id', 'unknown')}")
+            logger.info(f"Password reset email sent to {to_email}. ID: {response.get('id', 'unknown')}")
             return True
 
         except Exception as e:
-            print(f"[EMAIL SERVICE] Failed to send email to {to_email}: {str(e)}")
+            logger.error(f"Failed to send email to {to_email}: {str(e)}")
             return False
 
 

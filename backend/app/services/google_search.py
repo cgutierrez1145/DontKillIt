@@ -2,6 +2,9 @@
 import httpx
 from typing import List, Dict, Optional
 from app.config import settings
+from app.utils.logging_config import get_logger
+
+logger = get_logger(__name__)
 
 
 class GoogleSearchService:
@@ -56,7 +59,7 @@ class GoogleSearchService:
 
         except Exception as e:
             # Fall back to mock data if API call fails
-            print(f"Google Search API error: {e}")
+            logger.error(f"Google Search API error: {e}")
             return self._get_mock_results(query, num_results)
 
     def _get_mock_results(self, query: str, num_results: int) -> List[Dict[str, str]]:

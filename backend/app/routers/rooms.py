@@ -14,7 +14,10 @@ from app.schemas.room import (
 from app.utils.auth import get_current_user
 from app.services.photo_storage import photo_storage
 from app.services.room_analysis import room_analysis
+from app.utils.logging_config import get_logger
 import os
+
+logger = get_logger(__name__)
 
 router = APIRouter()
 
@@ -90,7 +93,7 @@ async def create_room(
             db.commit()
             db.refresh(room)
     except Exception as e:
-        print(f"Room lighting analysis failed: {e}")
+        logger.warning(f"Room lighting analysis failed for room {room.id}: {e}")
         # Continue without analysis, user can retry later
 
     return RoomPhotoResponse.model_validate(room)
