@@ -1,0 +1,50 @@
+# Virtual environment
+venv/
+env/
+.venv/
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Database files
+*.db
+*.sqlite3
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+.pytest_cache/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Git
+.git/
+.gitignore
+
+# Tests
+test_*.py
+tests/
+pytest.ini
+
+# Documentation
+*.md
+docs/
+
+# Uploaded files (mount as volume instead)
+uploads/
+
+# Misc
+.DS_Store
+Thumbs.db
+*.log

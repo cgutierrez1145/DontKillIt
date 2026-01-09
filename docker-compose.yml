@@ -18,5 +18,34 @@ services:
       timeout: 5s
       retries: 5
 
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: dontkillit-backend
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-dontkillit}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-dontkillit}
+      SECRET_KEY: ${SECRET_KEY:?SECRET_KEY must be set}
+      RESEND_API_KEY: ${RESEND_API_KEY:-}
+      GOOGLE_SEARCH_API_KEY: ${GOOGLE_SEARCH_API_KEY:-}
+      GOOGLE_SEARCH_ENGINE_ID: ${GOOGLE_SEARCH_ENGINE_ID:-}
+      PLANTNET_API_KEY: ${PLANTNET_API_KEY:-}
+      DEBUG: ${DEBUG:-False}
+      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-["http://localhost:5173","http://localhost:3000"]}
+    ports:
+      - "8000:8000"
+    volumes:
+      - uploads_data:/app/uploads
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/v1/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
 volumes:
   postgres_data:
+  uploads_data:
