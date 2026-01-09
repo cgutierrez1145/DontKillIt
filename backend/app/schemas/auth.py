@@ -41,3 +41,24 @@ class UserWithToken(BaseModel):
     user: UserResponse
     access_token: str
     token_type: str = "bearer"
+
+
+class ForgotPasswordRequest(BaseModel):
+    """Schema for forgot password request."""
+    email: EmailStr
+
+
+class ForgotPasswordResponse(BaseModel):
+    """Schema for forgot password response."""
+    message: str
+
+
+class ResetPasswordRequest(BaseModel):
+    """Schema for reset password request."""
+    token: str
+    new_password: str = Field(..., min_length=8, description="Password must be at least 8 characters")
+
+
+class ResetPasswordResponse(BaseModel):
+    """Schema for reset password response."""
+    message: str

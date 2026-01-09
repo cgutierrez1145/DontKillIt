@@ -1,22 +1,28 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { notificationsAPI } from '../services/api';
+import { useAuth } from '../context/AuthContext';
 import toast from 'react-hot-toast';
 
 export const useNotifications = () => {
   const queryClient = useQueryClient();
+  const { isAuthenticated } = useAuth();
 
-  // Get all notifications
+  // Get all notifications - only when authenticated
   const { data: notifications, isLoading } = useQuery({
     queryKey: ['notifications'],
     queryFn: () => notificationsAPI.getAll(),
     refetchInterval: 30000, // Refetch every 30 seconds as backup to WebSocket
+    enabled: isAuthenticated,
+    retry: false,
   });
 
-  // Get unread count
+  // Get unread count - only when authenticated
   const { data: unreadCount } = useQuery({
     queryKey: ['notifications', 'unread-count'],
     queryFn: () => notificationsAPI.getUnreadCount(),
     refetchInterval: 30000,
+    enabled: isAuthenticated,
+    retry: false,
   });
 
   // Mark notifications as read
