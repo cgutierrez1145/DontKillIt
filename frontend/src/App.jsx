@@ -3,7 +3,7 @@ import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { CssBaseline, AppBar, Toolbar, Typography, Box, Button } from '@mui/material';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from 'react-hot-toast';
-import { Spa, Login, Logout } from '@mui/icons-material';
+import { Spa, Login, Logout, CameraAlt } from '@mui/icons-material';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
@@ -17,6 +17,7 @@ import PlantsPage from './pages/PlantsPage';
 import AddPlantPage from './pages/AddPlantPage';
 import PlantDetailPage from './pages/PlantDetailPage';
 import DiagnosisPage from './pages/DiagnosisPage';
+import IdentifyPlantPage from './pages/IdentifyPlantPage';
 import SettingsPage from './pages/SettingsPage';
 
 // Components
@@ -108,6 +109,14 @@ function Navigation() {
             >
               My Plants
             </Button>
+            <Button
+              color="inherit"
+              startIcon={<CameraAlt />}
+              onClick={() => navigate('/identify')}
+              sx={{ display: { xs: 'none', sm: 'flex' } }}
+            >
+              Identify
+            </Button>
             <NotificationCenter />
             <Typography variant="body2" sx={{ display: { xs: 'none', sm: 'block' } }}>
               {user?.email}
@@ -179,6 +188,11 @@ function AppContent() {
         <Route path="/plants/:id/diagnosis" element={
           <ProtectedRoute>
             <DiagnosisPage />
+          </ProtectedRoute>
+        } />
+        <Route path="/identify" element={
+          <ProtectedRoute>
+            <IdentifyPlantPage />
           </ProtectedRoute>
         } />
         <Route path="/settings" element={

@@ -1,5 +1,5 @@
 import { Box, Container, Typography, Button, Grid, CircularProgress, Alert } from '@mui/material';
-import { Add as AddIcon } from '@mui/icons-material';
+import { Add as AddIcon, CameraAlt as CameraIcon } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { usePlants } from '../hooks/usePlants';
 import PlantCard from '../components/plants/PlantCard';
@@ -40,7 +40,7 @@ export default function PlantsPage() {
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
       {/* Header */}
-      <Box sx={{ mb: 4, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+      <Box sx={{ mb: 4, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 2 }}>
         <Box>
           <Typography variant="h3" component="h1" gutterBottom>
             My Plants
@@ -49,14 +49,24 @@ export default function PlantsPage() {
             {totalPlants === 0 ? 'No plants yet' : `${totalPlants} plant${totalPlants !== 1 ? 's' : ''}`}
           </Typography>
         </Box>
-        <Button
-          variant="contained"
-          startIcon={<AddIcon />}
-          onClick={handleAddPlant}
-          size="large"
-        >
-          Add Plant
-        </Button>
+        <Box sx={{ display: 'flex', gap: 2 }}>
+          <Button
+            variant="outlined"
+            startIcon={<CameraIcon />}
+            onClick={() => navigate('/identify')}
+            size="large"
+          >
+            Identify Plant
+          </Button>
+          <Button
+            variant="contained"
+            startIcon={<AddIcon />}
+            onClick={handleAddPlant}
+            size="large"
+          >
+            Add Plant
+          </Button>
+        </Box>
       </Box>
 
       {/* Empty State */}
@@ -76,16 +86,26 @@ export default function PlantsPage() {
             No plants in your collection yet
           </Typography>
           <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
-            Start tracking your plants by adding your first one!
+            Start tracking your plants by adding your first one, or identify a plant from a photo!
           </Typography>
-          <Button
-            variant="contained"
-            startIcon={<AddIcon />}
-            onClick={handleAddPlant}
-            size="large"
-          >
-            Add Your First Plant
-          </Button>
+          <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center', flexWrap: 'wrap' }}>
+            <Button
+              variant="contained"
+              startIcon={<CameraIcon />}
+              onClick={() => navigate('/identify')}
+              size="large"
+            >
+              Identify from Photo
+            </Button>
+            <Button
+              variant="outlined"
+              startIcon={<AddIcon />}
+              onClick={handleAddPlant}
+              size="large"
+            >
+              Add Manually
+            </Button>
+          </Box>
         </Box>
       )}
 

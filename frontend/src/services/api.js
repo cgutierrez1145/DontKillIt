@@ -195,6 +195,18 @@ export const diagnosisAPI = {
   },
 };
 
+// Plant Identification API calls
+export const identificationAPI = {
+  identify: async (formData) => {
+    const response = await api.post('/plants/identify', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return response.data;
+  },
+};
+
 // Notifications API calls
 export const notificationsAPI = {
   getAll: async (unreadOnly = false) => {
