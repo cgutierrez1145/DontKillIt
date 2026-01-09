@@ -60,7 +60,7 @@ function LoginPage() {
             </Typography>
 
             <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-              Welcome back to DontKillIt
+              Welcome back to Don't Kill It!
             </Typography>
 
             {error && (

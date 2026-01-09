@@ -97,7 +97,7 @@ function Navigation() {
           sx={{ flexGrow: 1, cursor: 'pointer' }}
           onClick={() => navigate('/')}
         >
-          DontKillIt
+          Don't Kill It!
         </Typography>
 
         {isAuthenticated ? (

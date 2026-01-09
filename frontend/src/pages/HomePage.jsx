@@ -50,7 +50,7 @@ function HomePage() {
             sx={{ height: 150, mb: 2 }}
           />
           <Typography variant="h2" component="h1" gutterBottom sx={{ fontWeight: 700 }}>
-            DontKillIt
+            Don't Kill It!
           </Typography>
           <Typography variant="h5" gutterBottom sx={{ fontStyle: 'italic', opacity: 0.95 }}>
             Real talk: plants are needy
