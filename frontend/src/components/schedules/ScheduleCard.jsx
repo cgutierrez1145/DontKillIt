@@ -148,7 +148,7 @@ function ScheduleSection({ title, icon: Icon, schedule, isLoading, onCreate, onU
             fullWidth
             value={frequencyDays}
             onChange={(e) => setFrequencyDays(parseInt(e.target.value) || 1)}
-            inputProps={{ min: 1, max: 365 }}
+            inputProps={{ min: 1, max: 30 }}
             helperText={`${type === 'watering' ? 'Water' : 'Feed'} every ${frequencyDays} day${frequencyDays !== 1 ? 's' : ''}`}
           />
         </DialogContent>

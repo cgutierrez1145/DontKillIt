@@ -177,7 +177,7 @@ function PlantFeedingCard({ plant }) {
             fullWidth
             value={frequency}
             onChange={(e) => setFrequency(e.target.value)}
-            inputProps={{ min: 1, max: 365 }}
+            inputProps={{ min: 1, max: 30 }}
             sx={{ mb: 2 }}
           />
           <TextField
