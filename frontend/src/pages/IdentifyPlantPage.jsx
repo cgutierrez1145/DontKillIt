@@ -26,6 +26,9 @@ import {
   Search as SearchIcon,
   Add as AddIcon,
   Yard as PlantIcon,
+  Pets as PetsIcon,
+  Warning as WarningIcon,
+  CheckCircle as SafeIcon,
 } from '@mui/icons-material';
 import { useIdentifyPlant } from '../hooks/useIdentification';
 import { useCreatePlant } from '../hooks/usePlants';
@@ -73,6 +76,7 @@ export default function IdentifyPlantPage() {
         plantnet_confidence: result.confidence,
         identified_common_name: result.common_name,
         auto_identified: true,
+        pet_friendly: result.pet_toxicity?.pet_friendly ?? null,
       },
       {
         onSuccess: (data) => {
@@ -102,6 +106,42 @@ export default function IdentifyPlantPage() {
     if (confidence >= 0.7) return 'High confidence';
     if (confidence >= 0.4) return 'Medium confidence';
     return 'Low confidence';
+  };
+
+  const getToxicityChip = (petToxicity) => {
+    if (!petToxicity) return null;
+
+    if (petToxicity.pet_friendly) {
+      return (
+        <Chip
+          icon={<SafeIcon />}
+          label="Pet-Friendly"
+          color="success"
+          size="small"
+          variant="outlined"
+        />
+      );
+    }
+
+    const levelColors = {
+      'mild': 'warning',
+      'moderate': 'error',
+      'severe': 'error',
+    };
+    const color = levelColors[petToxicity.toxicity_level] || 'error';
+    const label = petToxicity.toxicity_level === 'severe'
+      ? 'Highly Toxic to Pets'
+      : 'Toxic to Pets';
+
+    return (
+      <Chip
+        icon={<WarningIcon />}
+        label={label}
+        color={color}
+        size="small"
+        variant="outlined"
+      />
+    );
   };
 
   return (
@@ -253,12 +293,14 @@ export default function IdentifyPlantPage() {
                   <CardContent>
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
                       <Box>
-                        <Chip
-                          label="Best Match"
-                          color="primary"
-                          size="small"
-                          sx={{ mb: 1 }}
-                        />
+                        <Box sx={{ display: 'flex', gap: 1, mb: 1, flexWrap: 'wrap' }}>
+                          <Chip
+                            label="Best Match"
+                            color="primary"
+                            size="small"
+                          />
+                          {getToxicityChip(identificationResult.top_result.pet_toxicity)}
+                        </Box>
                         <Typography variant="h5" component="div">
                           {identificationResult.top_result.common_name || identificationResult.top_result.species}
                         </Typography>
@@ -312,6 +354,22 @@ export default function IdentifyPlantPage() {
                         )}
                       </Box>
                     )}
+
+                    {/* Pet Toxicity Details */}
+                    {identificationResult.top_result.pet_toxicity && !identificationResult.top_result.pet_toxicity.pet_friendly && (
+                      <Alert
+                        severity="warning"
+                        icon={<PetsIcon />}
+                        sx={{ mt: 2 }}
+                      >
+                        <Typography variant="body2">
+                          <strong>Pet Warning:</strong> This plant is toxic to cats and dogs.
+                          {identificationResult.top_result.pet_toxicity.symptoms && (
+                            <> Symptoms may include: {identificationResult.top_result.pet_toxicity.symptoms}</>
+                          )}
+                        </Typography>
+                      </Alert>
+                    )}
                   </CardContent>
                 </Card>
               )}
@@ -333,12 +391,15 @@ export default function IdentifyPlantPage() {
                             <Typography variant="body2" color="text.secondary" sx={{ fontStyle: 'italic', mb: 1 }}>
                               {result.species}
                             </Typography>
-                            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                              <Chip
-                                label={`${Math.round(result.confidence * 100)}%`}
-                                color={getConfidenceColor(result.confidence)}
-                                size="small"
-                              />
+                            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 1 }}>
+                              <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+                                <Chip
+                                  label={`${Math.round(result.confidence * 100)}%`}
+                                  color={getConfidenceColor(result.confidence)}
+                                  size="small"
+                                />
+                                {getToxicityChip(result.pet_toxicity)}
+                              </Box>
                               <Button
                                 size="small"
                                 startIcon={<AddIcon />}
