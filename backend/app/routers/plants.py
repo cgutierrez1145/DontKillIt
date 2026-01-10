@@ -7,6 +7,7 @@ from app.models.plant import Plant
 from app.schemas.plant import PlantCreate, PlantUpdate, PlantResponse, PlantListResponse
 from app.utils.auth import get_current_user
 from app.services.photo_storage import photo_storage
+from app.services.pet_toxicity import pet_toxicity_service
 
 router = APIRouter()
 
@@ -59,10 +60,22 @@ async def create_plant(
 ):
     """
     Create a new plant for the current user.
+    Auto-detects pet toxicity if species is provided and pet_friendly is not set.
     """
+    plant_dict = plant_data.model_dump()
+
+    # Auto-detect pet toxicity if species is provided and pet_friendly is not set
+    if plant_dict.get('species') and plant_dict.get('pet_friendly') is None:
+        toxicity_info = await pet_toxicity_service.get_toxicity(
+            species=plant_dict.get('species'),
+            common_name=plant_dict.get('identified_common_name')
+        )
+        if toxicity_info:
+            plant_dict['pet_friendly'] = toxicity_info['pet_friendly']
+
     new_plant = Plant(
         user_id=current_user.id,
-        **plant_data.model_dump()
+        **plant_dict
     )
 
     db.add(new_plant)

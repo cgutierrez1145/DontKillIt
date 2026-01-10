@@ -7,6 +7,15 @@ class PlantNetIdentificationRequest(BaseModel):
     organ: str = Field(default="auto", description="Plant organ (auto, flower, leaf, fruit, bark)")
 
 
+class PetToxicityInfo(BaseModel):
+    """Pet toxicity information for a plant."""
+    pet_friendly: bool = Field(..., description="True if safe for pets")
+    toxicity_level: str = Field(..., description="safe, mild, moderate, severe, or unknown")
+    toxic_parts: Optional[str] = Field(None, description="Which parts are toxic")
+    symptoms: Optional[str] = Field(None, description="Symptoms if ingested by pets")
+    source: str = Field(default="ASPCA", description="Data source (ASPCA or web_search)")
+
+
 class PlantNetIdentificationResult(BaseModel):
     """Schema for a single PlantNet identification result."""
     species: str = Field(..., description="Scientific name")
@@ -14,6 +23,7 @@ class PlantNetIdentificationResult(BaseModel):
     confidence: float = Field(..., ge=0.0, le=1.0, description="Confidence score")
     family: Optional[str] = Field(None, description="Plant family")
     genus: Optional[str] = Field(None, description="Plant genus")
+    pet_toxicity: Optional[PetToxicityInfo] = Field(None, description="Pet toxicity information")
 
 
 class PlantNetIdentificationResponse(BaseModel):

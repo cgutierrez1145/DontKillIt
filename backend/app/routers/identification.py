@@ -5,10 +5,11 @@ from typing import List
 
 from app.database import get_db
 from app.models.user import User
-from app.schemas.identification import PlantNetIdentificationResponse, PlantNetIdentificationResult
+from app.schemas.identification import PlantNetIdentificationResponse, PlantNetIdentificationResult, PetToxicityInfo
 from app.utils.auth import get_current_user
 from app.services.photo_storage import photo_storage
 from app.services.plantnet import plantnet
+from app.services.pet_toxicity import pet_toxicity_service
 import os
 
 router = APIRouter()
@@ -63,23 +64,41 @@ async def identify_plant(
         if identification_result.get('all_results'):
             for result in identification_result['all_results']:
                 if result.get('species'):  # Only include valid results
+                    # Look up pet toxicity for this result
+                    toxicity_data = await pet_toxicity_service.get_toxicity(
+                        species=result.get('species'),
+                        common_name=result.get('common_name'),
+                        genus=result.get('genus')
+                    )
+                    pet_toxicity = PetToxicityInfo(**toxicity_data) if toxicity_data else None
+
                     all_results.append(PlantNetIdentificationResult(
                         species=result.get('species', 'Unknown'),
                         common_name=result.get('common_name'),
                         confidence=result.get('confidence', 0.0),
                         family=result.get('family'),
-                        genus=result.get('genus')
+                        genus=result.get('genus'),
+                        pet_toxicity=pet_toxicity
                     ))
 
         # Get top result
         top_result = None
         if identification_result.get('species'):
+            # Look up pet toxicity for top result
+            top_toxicity_data = await pet_toxicity_service.get_toxicity(
+                species=identification_result.get('species'),
+                common_name=identification_result.get('common_name'),
+                genus=identification_result.get('genus')
+            )
+            top_pet_toxicity = PetToxicityInfo(**top_toxicity_data) if top_toxicity_data else None
+
             top_result = PlantNetIdentificationResult(
                 species=identification_result['species'],
                 common_name=identification_result.get('common_name'),
                 confidence=identification_result.get('confidence', 0.0),
                 family=identification_result.get('family'),
-                genus=identification_result.get('genus')
+                genus=identification_result.get('genus'),
+                pet_toxicity=top_pet_toxicity
             )
 
         response = PlantNetIdentificationResponse(
