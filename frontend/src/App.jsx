@@ -1,9 +1,10 @@
+import { useState } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
-import { CssBaseline, AppBar, Toolbar, Typography, Box, Button } from '@mui/material';
+import { CssBaseline, AppBar, Toolbar, Typography, Box, Button, IconButton, Menu, MenuItem, Divider } from '@mui/material';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from 'react-hot-toast';
-import { Spa, Login, Logout, CameraAlt } from '@mui/icons-material';
+import { Spa, Login, Logout, CameraAlt, Menu as MenuIcon, WaterDrop, Grass, Lightbulb } from '@mui/icons-material';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
@@ -19,6 +20,9 @@ import PlantDetailPage from './pages/PlantDetailPage';
 import DiagnosisPage from './pages/DiagnosisPage';
 import IdentifyPlantPage from './pages/IdentifyPlantPage';
 import SettingsPage from './pages/SettingsPage';
+import CareTipsPage from './pages/CareTipsPage';
+import WateringSchedulePage from './pages/WateringSchedulePage';
+import FeedingSchedulePage from './pages/FeedingSchedulePage';
 
 // Components
 import ProtectedRoute from './components/common/ProtectedRoute';
@@ -76,10 +80,24 @@ const theme = createTheme({
 function Navigation() {
   const { isAuthenticated, user, logout } = useAuth();
   const navigate = useNavigate();
+  const [anchorEl, setAnchorEl] = useState(null);
 
   const handleLogout = async () => {
     await logout();
     navigate('/login');
+  };
+
+  const handleMenuOpen = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleMenuNavigate = (path) => {
+    navigate(path);
+    handleMenuClose();
   };
 
   return (
@@ -95,40 +113,97 @@ function Navigation() {
         <Typography
           variant="h6"
           component="div"
-          sx={{ flexGrow: 1, cursor: 'pointer' }}
+          sx={{ flexGrow: 1, cursor: 'pointer', display: { xs: 'none', sm: 'block' } }}
           onClick={() => navigate('/')}
         >
           Don't Kill It!
         </Typography>
 
         {isAuthenticated ? (
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-            <Button
-              color="inherit"
-              onClick={() => navigate('/plants')}
-            >
-              My Plants
-            </Button>
-            <Button
-              color="inherit"
-              startIcon={<CameraAlt />}
-              onClick={() => navigate('/identify')}
-              sx={{ display: { xs: 'none', sm: 'flex' } }}
-            >
-              Identify
-            </Button>
-            <NotificationCenter />
-            <Typography variant="body2" sx={{ display: { xs: 'none', sm: 'block' } }}>
-              {user?.email}
-            </Typography>
-            <Button
-              color="inherit"
-              startIcon={<Logout />}
-              onClick={handleLogout}
-            >
-              Logout
-            </Button>
-          </Box>
+          <>
+            {/* Desktop Navigation */}
+            <Box sx={{ display: { xs: 'none', md: 'flex' }, alignItems: 'center', gap: 1 }}>
+              <Button
+                color="inherit"
+                onClick={() => navigate('/plants')}
+              >
+                My Plants
+              </Button>
+              <Button
+                color="inherit"
+                startIcon={<CameraAlt />}
+                onClick={() => navigate('/identify')}
+              >
+                Identify
+              </Button>
+              <Button
+                color="inherit"
+                startIcon={<Lightbulb />}
+                onClick={() => navigate('/care-tips')}
+              >
+                Care Tips
+              </Button>
+              <Button
+                color="inherit"
+                startIcon={<WaterDrop />}
+                onClick={() => navigate('/watering')}
+              >
+                Watering
+              </Button>
+              <Button
+                color="inherit"
+                startIcon={<Grass />}
+                onClick={() => navigate('/feeding')}
+              >
+                Feeding
+              </Button>
+              <NotificationCenter />
+              <Button
+                color="inherit"
+                startIcon={<Logout />}
+                onClick={handleLogout}
+              >
+                Logout
+              </Button>
+            </Box>
+
+            {/* Mobile Navigation */}
+            <Box sx={{ display: { xs: 'flex', md: 'none' }, alignItems: 'center' }}>
+              <NotificationCenter />
+              <IconButton
+                color="inherit"
+                onClick={handleMenuOpen}
+              >
+                <MenuIcon />
+              </IconButton>
+              <Menu
+                anchorEl={anchorEl}
+                open={Boolean(anchorEl)}
+                onClose={handleMenuClose}
+              >
+                <MenuItem onClick={() => handleMenuNavigate('/plants')}>
+                  <Spa sx={{ mr: 1 }} /> My Plants
+                </MenuItem>
+                <MenuItem onClick={() => handleMenuNavigate('/identify')}>
+                  <CameraAlt sx={{ mr: 1 }} /> Identify Plant
+                </MenuItem>
+                <Divider />
+                <MenuItem onClick={() => handleMenuNavigate('/care-tips')}>
+                  <Lightbulb sx={{ mr: 1 }} /> Care Tips
+                </MenuItem>
+                <MenuItem onClick={() => handleMenuNavigate('/watering')}>
+                  <WaterDrop sx={{ mr: 1 }} /> Watering Schedule
+                </MenuItem>
+                <MenuItem onClick={() => handleMenuNavigate('/feeding')}>
+                  <Grass sx={{ mr: 1 }} /> Feeding Schedule
+                </MenuItem>
+                <Divider />
+                <MenuItem onClick={handleLogout}>
+                  <Logout sx={{ mr: 1 }} /> Logout
+                </MenuItem>
+              </Menu>
+            </Box>
+          </>
         ) : (
           <Box sx={{ display: 'flex', gap: 1 }}>
             <Button
@@ -198,6 +273,21 @@ function AppContent() {
         <Route path="/settings" element={
           <ProtectedRoute>
             <SettingsPage />
+          </ProtectedRoute>
+        } />
+        <Route path="/care-tips" element={
+          <ProtectedRoute>
+            <CareTipsPage />
+          </ProtectedRoute>
+        } />
+        <Route path="/watering" element={
+          <ProtectedRoute>
+            <WateringSchedulePage />
+          </ProtectedRoute>
+        } />
+        <Route path="/feeding" element={
+          <ProtectedRoute>
+            <FeedingSchedulePage />
           </ProtectedRoute>
         } />
       </Routes>
