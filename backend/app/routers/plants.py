@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File
 from sqlalchemy.orm import Session
 from typing import List
 from app.database import get_db
@@ -6,6 +6,7 @@ from app.models.user import User
 from app.models.plant import Plant
 from app.schemas.plant import PlantCreate, PlantUpdate, PlantResponse, PlantListResponse
 from app.utils.auth import get_current_user
+from app.services.photo_storage import photo_storage
 
 router = APIRouter()
 
@@ -129,3 +130,25 @@ async def delete_plant(
     db.commit()
 
     return None
+
+
+@router.post("/upload-photo", status_code=status.HTTP_201_CREATED)
+async def upload_plant_photo(
+    file: UploadFile = File(...),
+    current_user: User = Depends(get_current_user),
+):
+    """
+    Upload a photo for a plant.
+    Returns the URL of the uploaded photo.
+    """
+    # Validate file type
+    if not file.content_type or not file.content_type.startswith('image/'):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="File must be an image"
+        )
+
+    # Use plant_id=0 as a temporary placeholder since this is for new plants
+    photo_url = await photo_storage.save_photo(file, plant_id=0)
+
+    return {"photo_url": photo_url}

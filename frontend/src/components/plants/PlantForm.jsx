@@ -6,8 +6,14 @@ import {
   Paper,
   Typography,
   Grid,
+  CircularProgress,
 } from '@mui/material';
+import {
+  CameraAlt as CameraIcon,
+  PhotoLibrary as GalleryIcon,
+} from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
+import { plantsAPI, getPhotoUrl } from '../../services/api';
 
 export default function PlantForm({ initialData = {}, onSubmit, isLoading = false, title = 'Plant Information' }) {
   const navigate = useNavigate();
@@ -20,6 +26,10 @@ export default function PlantForm({ initialData = {}, onSubmit, isLoading = fals
     photo_url: initialData.photo_url || '',
   });
 
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [previewUrl, setPreviewUrl] = useState(getPhotoUrl(initialData.photo_url) || null);
+  const [isUploading, setIsUploading] = useState(false);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({
@@ -28,11 +38,42 @@ export default function PlantForm({ initialData = {}, onSubmit, isLoading = fals
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleFileSelect = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      setSelectedFile(file);
+      setPreviewUrl(URL.createObjectURL(file));
+    }
+  };
+
+  const handleRemovePhoto = () => {
+    setSelectedFile(null);
+    setPreviewUrl(null);
+    setFormData(prev => ({ ...prev, photo_url: '' }));
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
+
+    let photoUrl = formData.photo_url;
+
+    // Upload photo if a new file was selected
+    if (selectedFile) {
+      setIsUploading(true);
+      try {
+        const result = await plantsAPI.uploadPhoto(selectedFile);
+        photoUrl = result.photo_url;
+      } catch (error) {
+        console.error('Failed to upload photo:', error);
+        setIsUploading(false);
+        return;
+      }
+      setIsUploading(false);
+    }
+
     // Remove empty strings to send null for optional fields
-    const cleanedData = Object.entries(formData).reduce((acc, [key, value]) => {
-      acc[key] = value.trim() === '' ? null : value;
+    const cleanedData = Object.entries({ ...formData, photo_url: photoUrl }).reduce((acc, [key, value]) => {
+      acc[key] = typeof value === 'string' && value.trim() === '' ? null : value;
       return acc;
     }, {});
     onSubmit(cleanedData);
@@ -41,6 +82,8 @@ export default function PlantForm({ initialData = {}, onSubmit, isLoading = fals
   const handleCancel = () => {
     navigate('/plants');
   };
+
+  const isSubmitting = isLoading || isUploading;
 
   return (
     <Paper elevation={3} sx={{ p: 4, maxWidth: 800, mx: 'auto' }}>
@@ -95,16 +138,79 @@ export default function PlantForm({ initialData = {}, onSubmit, isLoading = fals
             />
           </Grid>
 
+          {/* Photo Upload Section */}
           <Grid item xs={12}>
-            <TextField
-              fullWidth
-              label="Photo URL"
-              name="photo_url"
-              value={formData.photo_url}
-              onChange={handleChange}
-              placeholder="https://example.com/plant-photo.jpg"
-              helperText="Optional: Enter a URL to a photo of your plant"
+            <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+              Plant Photo (optional)
+            </Typography>
+
+            {/* Hidden file inputs */}
+            <input
+              accept="image/*"
+              capture="environment"
+              style={{ display: 'none' }}
+              id="camera-upload"
+              type="file"
+              onChange={handleFileSelect}
             />
+            <input
+              accept="image/*"
+              style={{ display: 'none' }}
+              id="gallery-upload"
+              type="file"
+              onChange={handleFileSelect}
+            />
+
+            {/* Photo preview or upload buttons */}
+            {previewUrl ? (
+              <Box sx={{ position: 'relative' }}>
+                <Box
+                  component="img"
+                  src={previewUrl}
+                  alt="Plant preview"
+                  sx={{
+                    width: '100%',
+                    maxHeight: 300,
+                    objectFit: 'contain',
+                    borderRadius: 2,
+                    border: '1px solid',
+                    borderColor: 'divider',
+                  }}
+                />
+                <Button
+                  size="small"
+                  onClick={handleRemovePhoto}
+                  sx={{ position: 'absolute', top: 8, right: 8 }}
+                  variant="contained"
+                  color="inherit"
+                >
+                  Remove
+                </Button>
+              </Box>
+            ) : (
+              <Box sx={{ display: 'flex', gap: 2 }}>
+                <label htmlFor="camera-upload" style={{ flex: 1 }}>
+                  <Button
+                    variant="outlined"
+                    component="span"
+                    startIcon={<CameraIcon />}
+                    fullWidth
+                  >
+                    Take Photo
+                  </Button>
+                </label>
+                <label htmlFor="gallery-upload" style={{ flex: 1 }}>
+                  <Button
+                    variant="outlined"
+                    component="span"
+                    startIcon={<GalleryIcon />}
+                    fullWidth
+                  >
+                    Choose Photo
+                  </Button>
+                </label>
+              </Box>
+            )}
           </Grid>
 
           <Grid item xs={12}>
@@ -125,16 +231,17 @@ export default function PlantForm({ initialData = {}, onSubmit, isLoading = fals
               <Button
                 variant="outlined"
                 onClick={handleCancel}
-                disabled={isLoading}
+                disabled={isSubmitting}
               >
                 Cancel
               </Button>
               <Button
                 type="submit"
                 variant="contained"
-                disabled={isLoading || !formData.name.trim()}
+                disabled={isSubmitting || !formData.name.trim()}
+                startIcon={isUploading ? <CircularProgress size={20} color="inherit" /> : null}
               >
-                {isLoading ? 'Saving...' : 'Save Plant'}
+                {isUploading ? 'Uploading...' : isLoading ? 'Saving...' : 'Save Plant'}
               </Button>
             </Box>
           </Grid>

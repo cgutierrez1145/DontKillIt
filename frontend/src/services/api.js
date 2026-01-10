@@ -1,6 +1,18 @@
 import axios from 'axios';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api/v1';
+const API_BASE_URL = API_URL.replace('/api/v1', '');
+
+// Helper to get full URL for photos served by the backend
+export const getPhotoUrl = (photoPath) => {
+  if (!photoPath) return null;
+  // If it's already a full URL, return as-is
+  if (photoPath.startsWith('http://') || photoPath.startsWith('https://')) {
+    return photoPath;
+  }
+  // Otherwise, prefix with the backend base URL
+  return `${API_BASE_URL}${photoPath}`;
+};
 
 // Create axios instance
 const api = axios.create({
@@ -98,6 +110,17 @@ export const plantsAPI = {
 
   delete: async (id) => {
     const response = await api.delete(`/plants/${id}`);
+    return response.data;
+  },
+
+  uploadPhoto: async (file) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    const response = await api.post('/plants/upload-photo', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
     return response.data;
   },
 };

@@ -4,7 +4,7 @@ import uuid
 from pathlib import Path
 from typing import Optional
 from fastapi import UploadFile
-from PIL import Image
+from PIL import Image, ImageOps
 import io
 
 from app.config import settings
@@ -40,6 +40,9 @@ class PhotoStorageService:
         # Compress and save the image
         try:
             image = Image.open(io.BytesIO(contents))
+
+            # Apply EXIF orientation (fixes rotation from mobile cameras)
+            image = ImageOps.exif_transpose(image)
 
             # Convert RGBA to RGB if necessary
             if image.mode in ('RGBA', 'LA', 'P'):

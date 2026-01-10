@@ -2,6 +2,7 @@ import { Card, CardContent, CardMedia, CardActions, Typography, IconButton, Chip
 import { Delete as DeleteIcon, Edit as EditIcon, LocationOn as LocationIcon } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { useDeletePlant } from '../../hooks/usePlants';
+import { getPhotoUrl } from '../../services/api';
 
 export default function PlantCard({ plant }) {
   const navigate = useNavigate();
@@ -22,7 +23,7 @@ export default function PlantCard({ plant }) {
   };
 
   // Default plant image if no photo
-  const plantImage = plant.photo_url || 'https://via.placeholder.com/300x200?text=Plant';
+  const plantImage = getPhotoUrl(plant.photo_url) || 'https://via.placeholder.com/300x200?text=Plant';
 
   return (
     <Card

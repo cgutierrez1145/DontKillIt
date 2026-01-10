@@ -14,6 +14,7 @@ import {
 import { Edit as EditIcon, ArrowBack as BackIcon, LocationOn as LocationIcon, LocalHospital as DiagnoseIcon } from '@mui/icons-material';
 import { usePlant } from '../hooks/usePlants';
 import ScheduleCard from '../components/schedules/ScheduleCard';
+import { getPhotoUrl } from '../services/api';
 
 export default function PlantDetailPage() {
   const { id } = useParams();
@@ -57,7 +58,7 @@ export default function PlantDetailPage() {
     );
   }
 
-  const plantImage = plant.photo_url || 'https://via.placeholder.com/400x300?text=Plant';
+  const plantImage = getPhotoUrl(plant.photo_url) || 'https://via.placeholder.com/400x300?text=Plant';
 
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
