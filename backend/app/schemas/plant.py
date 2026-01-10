@@ -25,6 +25,9 @@ class PlantBase(BaseModel):
     seasonal_notes: Optional[str] = Field(None, description="Seasonal care notes")
     care_summary: Optional[str] = Field(None, description="Care summary")
 
+    # Pet safety
+    pet_friendly: Optional[bool] = Field(None, description="Safe for pets (cats/dogs)")
+
     # PlantNet identification data
     plantnet_confidence: Optional[float] = Field(None, ge=0.0, le=1.0, description="PlantNet confidence score")
     identified_common_name: Optional[str] = Field(None, max_length=255, description="Common name from PlantNet")
@@ -57,6 +60,9 @@ class PlantUpdate(BaseModel):
     seasonal_outdoor: Optional[bool] = None
     seasonal_notes: Optional[str] = None
     care_summary: Optional[str] = None
+
+    # Pet safety
+    pet_friendly: Optional[bool] = None
 
     # PlantNet identification data
     plantnet_confidence: Optional[float] = Field(None, ge=0.0, le=1.0)

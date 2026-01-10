@@ -11,7 +11,7 @@ import {
   Alert,
   IconButton,
 } from '@mui/material';
-import { Edit as EditIcon, ArrowBack as BackIcon, LocationOn as LocationIcon, LocalHospital as DiagnoseIcon } from '@mui/icons-material';
+import { Edit as EditIcon, ArrowBack as BackIcon, LocationOn as LocationIcon, LocalHospital as DiagnoseIcon, Pets as PetsIcon } from '@mui/icons-material';
 import { usePlant } from '../hooks/usePlants';
 import ScheduleCard from '../components/schedules/ScheduleCard';
 import { getPhotoUrl } from '../services/api';
@@ -133,6 +133,20 @@ export default function PlantDetailPage() {
                     <LocationIcon fontSize="small" color="action" />
                     <Typography variant="body1">{plant.location}</Typography>
                   </Box>
+                </Box>
+              )}
+
+              {plant.pet_friendly !== null && plant.pet_friendly !== undefined && (
+                <Box sx={{ mb: 2 }}>
+                  <Typography variant="body2" color="text.secondary" gutterBottom>
+                    Pet Safety
+                  </Typography>
+                  <Chip
+                    icon={<PetsIcon />}
+                    label={plant.pet_friendly ? "Pet-Friendly" : "Toxic to Pets"}
+                    color={plant.pet_friendly ? "success" : "error"}
+                    variant="outlined"
+                  />
                 </Box>
               )}
 

@@ -31,6 +31,9 @@ class Plant(Base):
     seasonal_notes = Column(Text, nullable=True)  # Additional seasonal care info
     care_summary = Column(Text, nullable=True)  # Auto-generated summary from web search
 
+    # Pet safety
+    pet_friendly = Column(Boolean, nullable=True)  # True if safe for pets, False if toxic
+
     # PlantNet identification data
     plantnet_confidence = Column(Float, nullable=True)  # Confidence score from PlantNet ID (0.0-1.0)
     identified_common_name = Column(String(255), nullable=True)  # Common name from PlantNet

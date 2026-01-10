@@ -7,10 +7,15 @@ import {
   Typography,
   Grid,
   CircularProgress,
+  FormControl,
+  FormLabel,
+  ToggleButtonGroup,
+  ToggleButton,
 } from '@mui/material';
 import {
   CameraAlt as CameraIcon,
   PhotoLibrary as GalleryIcon,
+  Pets as PetsIcon,
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { plantsAPI, getPhotoUrl } from '../../services/api';
@@ -24,6 +29,7 @@ export default function PlantForm({ initialData = {}, onSubmit, isLoading = fals
     location: initialData.location || '',
     notes: initialData.notes || '',
     photo_url: initialData.photo_url || '',
+    pet_friendly: initialData.pet_friendly,
   });
 
   const [selectedFile, setSelectedFile] = useState(null);
@@ -35,6 +41,13 @@ export default function PlantForm({ initialData = {}, onSubmit, isLoading = fals
     setFormData(prev => ({
       ...prev,
       [name]: value
+    }));
+  };
+
+  const handlePetFriendlyChange = (event, newValue) => {
+    setFormData(prev => ({
+      ...prev,
+      pet_friendly: newValue
     }));
   };
 
@@ -136,6 +149,28 @@ export default function PlantForm({ initialData = {}, onSubmit, isLoading = fals
               onChange={handleChange}
               placeholder="e.g., Living Room, Kitchen Window"
             />
+          </Grid>
+
+          <Grid item xs={12}>
+            <FormControl component="fieldset">
+              <FormLabel component="legend" sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mb: 1 }}>
+                <PetsIcon fontSize="small" />
+                Pet Safety
+              </FormLabel>
+              <ToggleButtonGroup
+                value={formData.pet_friendly}
+                exclusive
+                onChange={handlePetFriendlyChange}
+                size="small"
+              >
+                <ToggleButton value={true} color="success">
+                  Pet-Friendly
+                </ToggleButton>
+                <ToggleButton value={false} color="error">
+                  Toxic to Pets
+                </ToggleButton>
+              </ToggleButtonGroup>
+            </FormControl>
           </Grid>
 
           {/* Photo Upload Section */}
