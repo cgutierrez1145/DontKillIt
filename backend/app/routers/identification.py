@@ -50,7 +50,9 @@ async def identify_plant(
     temp_photo_path = await photo_storage.save_photo(file, plant_id=0)
 
     # Get full path for PlantNet API
-    full_path = os.path.join(photo_storage.upload_dir, temp_photo_path.lstrip('/photos/'))
+    # Remove the /photos/ prefix to get just the filename
+    filename = temp_photo_path.replace('/photos/', '', 1)
+    full_path = os.path.join(photo_storage.upload_dir, filename)
 
     try:
         # Call PlantNet API

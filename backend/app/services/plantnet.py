@@ -44,6 +44,7 @@ class PlantNetService:
             return self._get_mock_identification(image_path)
 
         try:
+            logger.info(f"Calling PlantNet API with image: {image_path}, organ: {organ}")
             async with httpx.AsyncClient() as client:
                 # Prepare the request
                 url = f"{self.base_url}/identify/{self.project}"
@@ -68,6 +69,8 @@ class PlantNetService:
                     response.raise_for_status()
 
                 data = response.json()
+                logger.info(f"PlantNet API response status: {response.status_code}")
+                logger.debug(f"PlantNet API response data: {data}")
 
                 # Parse the response
                 if 'results' in data and len(data['results']) > 0:
@@ -83,9 +86,10 @@ class PlantNetService:
                     all_results = []
                     for result in data['results'][:5]:  # Top 5 results
                         sp = result.get('species', {})
+                        sp_common_names = sp.get('commonNames', [])
                         all_results.append({
                             'species': sp.get('scientificNameWithoutAuthor', 'Unknown'),
-                            'common_name': sp.get('commonNames', [None])[0],
+                            'common_name': sp_common_names[0] if sp_common_names else None,
                             'confidence': result.get('score', 0.0),
                             'family': sp.get('family', {}).get('scientificNameWithoutAuthor'),
                             'genus': sp.get('genus', {}).get('scientificNameWithoutAuthor')
