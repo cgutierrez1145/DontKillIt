@@ -78,7 +78,7 @@ function ScheduleSection({ title, icon: Icon, schedule, isLoading, onCreate, onU
               size="small"
               startIcon={<AddIcon />}
               onClick={() => {
-                setFrequencyDays(type === 'watering' ? 7 : 14);
+                setFrequencyDays(type === 'watering' ? 7 : 30);
                 setScheduleDialog(true);
               }}
             >
@@ -147,7 +147,10 @@ function ScheduleSection({ title, icon: Icon, schedule, isLoading, onCreate, onU
             type="number"
             fullWidth
             value={frequencyDays}
-            onChange={(e) => setFrequencyDays(parseInt(e.target.value) || 1)}
+            onChange={(e) => {
+              const value = parseInt(e.target.value) || 1;
+              setFrequencyDays(Math.min(30, Math.max(1, value)));
+            }}
             inputProps={{ min: 1, max: 30 }}
             helperText={`${type === 'watering' ? 'Water' : 'Feed'} every ${frequencyDays} day${frequencyDays !== 1 ? 's' : ''}`}
           />

@@ -7,7 +7,7 @@ from typing import Optional, List
 # Feeding Schedule Schemas
 class FeedingScheduleBase(BaseModel):
     """Base schema for feeding schedule."""
-    frequency_days: int = Field(..., ge=1, description="Number of days between feedings")
+    frequency_days: int = Field(..., ge=1, le=30, description="Number of days between feedings (1-30)")
 
 
 class FeedingScheduleCreate(FeedingScheduleBase):
@@ -17,7 +17,7 @@ class FeedingScheduleCreate(FeedingScheduleBase):
 
 class FeedingScheduleUpdate(BaseModel):
     """Schema for updating a feeding schedule."""
-    frequency_days: Optional[int] = Field(None, ge=1)
+    frequency_days: Optional[int] = Field(None, ge=1, le=30)
 
 
 class FeedingScheduleResponse(FeedingScheduleBase):

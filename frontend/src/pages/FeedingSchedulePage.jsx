@@ -65,7 +65,7 @@ function PlantFeedingCard({ plant }) {
   };
 
   const openScheduleDialog = () => {
-    setFrequency(schedule?.frequency_days?.toString() || '14');
+    setFrequency(schedule?.frequency_days?.toString() || '30');
     setFertilizerType(schedule?.fertilizer_type || '');
     setScheduleDialogOpen(true);
   };
@@ -176,7 +176,10 @@ function PlantFeedingCard({ plant }) {
             type="number"
             fullWidth
             value={frequency}
-            onChange={(e) => setFrequency(e.target.value)}
+            onChange={(e) => {
+              const value = parseInt(e.target.value) || 1;
+              setFrequency(Math.min(30, Math.max(1, value)).toString());
+            }}
             inputProps={{ min: 1, max: 30 }}
             sx={{ mb: 2 }}
           />

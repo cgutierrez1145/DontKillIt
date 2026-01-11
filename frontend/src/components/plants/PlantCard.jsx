@@ -1,4 +1,20 @@
-import { Card, CardContent, CardMedia, CardActions, Typography, IconButton, Chip, Box } from '@mui/material';
+import { useState } from 'react';
+import {
+  Card,
+  CardContent,
+  CardMedia,
+  CardActions,
+  Typography,
+  IconButton,
+  Chip,
+  Box,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
+  Button,
+} from '@mui/material';
 import { Delete as DeleteIcon, Edit as EditIcon, LocationOn as LocationIcon } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { useDeletePlant } from '../../hooks/usePlants';
@@ -7,15 +23,23 @@ import { getPhotoUrl } from '../../services/api';
 export default function PlantCard({ plant }) {
   const navigate = useNavigate();
   const deletePlant = useDeletePlant();
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
   const handleEdit = () => {
     navigate(`/plants/${plant.id}/edit`);
   };
 
-  const handleDelete = () => {
-    if (window.confirm(`Are you sure you want to delete "${plant.name}"?`)) {
-      deletePlant.mutate(plant.id);
-    }
+  const handleDeleteClick = () => {
+    setDeleteDialogOpen(true);
+  };
+
+  const handleDeleteCancel = () => {
+    setDeleteDialogOpen(false);
+  };
+
+  const handleDeleteConfirm = () => {
+    deletePlant.mutate(plant.id);
+    setDeleteDialogOpen(false);
   };
 
   const handleCardClick = () => {
@@ -96,13 +120,43 @@ export default function PlantCard({ plant }) {
         <IconButton
           size="small"
           color="error"
-          onClick={(e) => { e.stopPropagation(); handleDelete(); }}
+          onClick={(e) => { e.stopPropagation(); handleDeleteClick(); }}
           aria-label="delete plant"
           disabled={deletePlant.isPending}
         >
           <DeleteIcon />
         </IconButton>
       </CardActions>
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog
+        open={deleteDialogOpen}
+        onClose={handleDeleteCancel}
+        aria-labelledby="delete-dialog-title"
+        aria-describedby="delete-dialog-description"
+      >
+        <DialogTitle id="delete-dialog-title">
+          Delete Plant
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="delete-dialog-description">
+            Are you sure you want to delete "{plant.name}"? This action cannot be undone.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleDeleteCancel} color="primary">
+            Cancel
+          </Button>
+          <Button
+            onClick={handleDeleteConfirm}
+            color="error"
+            variant="contained"
+            disabled={deletePlant.isPending}
+          >
+            {deletePlant.isPending ? 'Deleting...' : 'Delete'}
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Card>
   );
 }

@@ -17,6 +17,7 @@ import ResetPasswordPage from './pages/ResetPasswordPage';
 import PlantsPage from './pages/PlantsPage';
 import AddPlantPage from './pages/AddPlantPage';
 import PlantDetailPage from './pages/PlantDetailPage';
+import EditPlantPage from './pages/EditPlantPage';
 import DiagnosisPage from './pages/DiagnosisPage';
 import IdentifyPlantPage from './pages/IdentifyPlantPage';
 import SettingsPage from './pages/SettingsPage';
@@ -258,6 +259,11 @@ function AppContent() {
         <Route path="/plants/:id" element={
           <ProtectedRoute>
             <PlantDetailPage />
+          </ProtectedRoute>
+        } />
+        <Route path="/plants/:id/edit" element={
+          <ProtectedRoute>
+            <EditPlantPage />
           </ProtectedRoute>
         } />
         <Route path="/plants/:id/diagnosis" element={
