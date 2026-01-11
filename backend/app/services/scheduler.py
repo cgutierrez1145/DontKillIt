@@ -8,6 +8,18 @@ from app.services.notification_service import notification_service
 
 logger = logging.getLogger(__name__)
 
+# Import data scraper lazily to avoid circular imports
+_data_scraper = None
+
+
+def get_data_scraper():
+    """Lazy import of data scraper to avoid circular imports."""
+    global _data_scraper
+    if _data_scraper is None:
+        from app.services.data_scraper import data_scraper
+        _data_scraper = data_scraper
+    return _data_scraper
+
 
 class SchedulerService:
     """Service for managing scheduled tasks."""
@@ -28,6 +40,28 @@ class SchedulerService:
             replace_existing=True
         )
         logger.info("Reminder job scheduled for 9:00 AM daily")
+
+    def start_enrichment_job(self):
+        """Start the daily plant data enrichment job."""
+        # Run daily at 2:00 AM to maximize API calls
+        self.scheduler.add_job(
+            func=self.run_daily_enrichment,
+            trigger=CronTrigger(hour=2, minute=0),
+            id='daily_enrichment',
+            name='Enrich plant data from Perenual API',
+            replace_existing=True
+        )
+        logger.info("Enrichment job scheduled for 2:00 AM daily")
+
+    def run_daily_enrichment(self):
+        """Run daily plant data enrichment - called by scheduler."""
+        logger.info("Running scheduled plant data enrichment...")
+        try:
+            scraper = get_data_scraper()
+            result = asyncio.run(scraper.run_daily_enrichment())
+            logger.info(f"Enrichment complete: {result.get('plants_enriched', 0)} plants enriched")
+        except Exception as e:
+            logger.error(f"Error in enrichment job: {e}")
 
     def check_reminders(self):
         """Check and send reminders - called by scheduler."""
@@ -54,6 +88,17 @@ class SchedulerService:
             return {"success": False, "error": str(e)}
         finally:
             db.close()
+
+    async def trigger_enrichment_now(self, max_plants: int = None):
+        """Manually trigger plant data enrichment (for testing or manual runs)."""
+        logger.info("Manual enrichment triggered")
+        try:
+            scraper = get_data_scraper()
+            result = await scraper.run_daily_enrichment(max_plants=max_plants)
+            return {"success": True, **result}
+        except Exception as e:
+            logger.error(f"Error in manual enrichment: {e}")
+            return {"success": False, "error": str(e)}
 
     def shutdown(self):
         """Shutdown the scheduler."""

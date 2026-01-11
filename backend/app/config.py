@@ -12,6 +12,7 @@ class Settings(BaseSettings):
     GOOGLE_SEARCH_API_KEY: str = ""
     GOOGLE_SEARCH_ENGINE_ID: str = ""
     PLANTNET_API_KEY: str = ""
+    PERENUAL_API_KEY: str = ""  # Free tier: 100 requests/day - https://perenual.com/docs/api
     RESEND_API_KEY: str = ""
 
     # JWT Authentication

@@ -104,20 +104,21 @@ async def identify_plant(
         response = PlantNetIdentificationResponse(
             results=all_results,
             top_result=top_result,
-            total_results=len(all_results)
+            total_results=len(all_results),
+            photo_url=temp_photo_path  # Include photo URL so frontend can use it when creating plant
         )
 
         return response
 
     except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Plant identification failed: {str(e)}"
-        )
-    finally:
-        # Clean up temporary photo
+        # Only clean up photo on error
         try:
             if os.path.exists(full_path):
                 os.remove(full_path)
         except Exception:
-            pass  # Ignore cleanup errors
+            pass
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Plant identification failed: {str(e)}"
+        )
+    # Note: Photo is NOT deleted on success - it will be used when creating the plant

@@ -31,3 +31,4 @@ class PlantNetIdentificationResponse(BaseModel):
     results: list[PlantNetIdentificationResult] = Field(..., description="List of identification results")
     top_result: Optional[PlantNetIdentificationResult] = Field(None, description="Best match")
     total_results: int = Field(..., description="Total number of results")
+    photo_url: Optional[str] = Field(None, description="URL of the uploaded photo for use when creating the plant")

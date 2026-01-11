@@ -77,6 +77,7 @@ export default function IdentifyPlantPage() {
         identified_common_name: result.common_name,
         auto_identified: true,
         pet_friendly: result.pet_toxicity?.pet_friendly ?? null,
+        photo_url: identificationResult?.photo_url || null,
       },
       {
         onSuccess: (data) => {

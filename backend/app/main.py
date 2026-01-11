@@ -97,6 +97,7 @@ async def startup_event():
     logger.info(f"Starting {settings.APP_NAME} v{settings.VERSION}")
     logger.info(f"Debug mode: {settings.DEBUG}")
     scheduler_service.start_reminder_job()
+    scheduler_service.start_enrichment_job()
     logger.info("Application startup complete")
 
 
@@ -153,7 +154,7 @@ async def trigger_reminders(request: Request, current_user: User = Depends(get_c
 
 
 # Include routers
-from app.routers import auth, plants, watering, feeding, diagnosis, identification, care, rooms, tips, notifications
+from app.routers import auth, plants, watering, feeding, diagnosis, identification, care, rooms, tips, notifications, enrichment
 
 app.include_router(auth.router, prefix="/api/v1/auth", tags=["Authentication"])
 app.include_router(plants.router, prefix="/api/v1/plants", tags=["Plants"])
@@ -165,6 +166,7 @@ app.include_router(care.router, prefix="/api/v1", tags=["Care Recommendations"])
 app.include_router(rooms.router, prefix="/api/v1", tags=["Rooms"])
 app.include_router(tips.router, prefix="/api/v1", tags=["Tips"])
 app.include_router(notifications.router, prefix="/api/v1", tags=["Notifications"])
+app.include_router(enrichment.router, prefix="/api/v1", tags=["Data Enrichment"])
 
 
 if __name__ == "__main__":
