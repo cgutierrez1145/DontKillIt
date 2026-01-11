@@ -36,7 +36,9 @@ frontend/build/
 
 # Uploads
 uploads/photos/*
+backend/uploads/photos/*
 !uploads/photos/.gitkeep
+!backend/uploads/photos/.gitkeep
 
 # Logs
 logs/
@@ -45,3 +47,4 @@ logs/
 # Sensitive files
 json/
 API Key (Resend)/
+API Keys/
