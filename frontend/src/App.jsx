@@ -30,6 +30,7 @@ import FeedingPreviewPage from './pages/FeedingPreviewPage';
 import DiagnosisPreviewPage from './pages/DiagnosisPreviewPage';
 import RemindersPreviewPage from './pages/RemindersPreviewPage';
 import DashboardPreviewPage from './pages/DashboardPreviewPage';
+import DiagnosisSelectPage from './pages/DiagnosisSelectPage';
 
 // Components
 import ProtectedRoute from './components/common/ProtectedRoute';
@@ -290,6 +291,11 @@ function AppContent() {
         <Route path="/identify" element={
           <ProtectedRoute>
             <IdentifyPlantPage />
+          </ProtectedRoute>
+        } />
+        <Route path="/diagnosis" element={
+          <ProtectedRoute>
+            <DiagnosisSelectPage />
           </ProtectedRoute>
         } />
         <Route path="/settings" element={

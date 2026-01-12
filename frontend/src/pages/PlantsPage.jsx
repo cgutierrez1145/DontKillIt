@@ -24,7 +24,7 @@ const features = [
     title: 'Plant Diagnosis',
     description: 'Diagnose plant problems with AI',
     cta: 'Diagnose',
-    link: '/identify'
+    link: '/diagnosis'
   },
   {
     icon: <Notifications sx={{ fontSize: 28, color: 'warning.main' }} />,
