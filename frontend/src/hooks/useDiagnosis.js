@@ -23,7 +23,7 @@ export function useDiagnosis(photoId) {
   return useQuery({
     queryKey: diagnosisKeys.detail(photoId),
     queryFn: () => diagnosisAPI.getDiagnosis(photoId),
-    enabled: !!plantId,
+    enabled: !!photoId,
   });
 }
 
