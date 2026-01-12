@@ -101,7 +101,7 @@ function HomePage() {
                   { icon: <Opacity sx={{ fontSize: 28, color: 'primary.main' }} />, title: 'Smart Watering', description: 'Track watering schedules and get reminders', cta: 'View Schedules', link: '/watering' },
                   { icon: <LocalFlorist sx={{ fontSize: 28, color: 'secondary.main' }} />, title: 'Feeding Tracker', description: 'Manage feeding schedules and history', cta: 'View Feeding', link: '/feeding' },
                   { icon: <LocalHospital sx={{ fontSize: 28, color: 'error.main' }} />, title: 'Plant Diagnosis', description: 'Diagnose plant problems with AI', cta: 'Diagnose', link: '/identify' },
-                  { icon: <Notifications sx={{ fontSize: 28, color: 'warning.main' }} />, title: 'Care Tips', description: 'Get personalized care advice', cta: 'View Tips', link: '/care-tips' },
+                  { icon: <Notifications sx={{ fontSize: 28, color: 'warning.main' }} />, title: 'Email Reminders', description: 'Get notified when plants need care', cta: 'Settings', link: '/settings' },
                 ].map((feature, index) => (
                   <Grid item xs={6} sm={4} md={2.5} key={index}>
                     <Card sx={{ textAlign: 'center', height: '100%' }}>
