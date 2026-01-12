@@ -28,10 +28,10 @@ const features = [
   },
   {
     icon: <Notifications sx={{ fontSize: 28, color: 'warning.main' }} />,
-    title: 'Care Tips',
-    description: 'Get personalized care advice',
-    cta: 'View Tips',
-    link: '/care-tips'
+    title: 'Email Reminders',
+    description: 'Get notified when plants need care',
+    cta: 'Settings',
+    link: '/settings'
   }
 ];
 
