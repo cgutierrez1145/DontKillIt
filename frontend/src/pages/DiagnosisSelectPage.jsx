@@ -29,13 +29,14 @@ import {
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { usePlants } from '../hooks/usePlants';
-import { useUploadDiagnosis } from '../hooks/useDiagnosis';
+import { useUploadDiagnosis, useTextDiagnosis } from '../hooks/useDiagnosis';
 import { getPhotoUrl } from '../services/api';
 
 export default function DiagnosisSelectPage() {
   const navigate = useNavigate();
   const { data, isLoading, isError, error } = usePlants();
   const uploadDiagnosis = useUploadDiagnosis();
+  const textDiagnosis = useTextDiagnosis();
   const uploadSectionRef = useRef(null);
 
   const [selectedFile, setSelectedFile] = useState(null);
@@ -45,9 +46,14 @@ export default function DiagnosisSelectPage() {
   const [diagnosisResult, setDiagnosisResult] = useState(null);
 
   const plants = data?.plants || [];
+  const selectedPlant = plants.find(p => String(p.id) === selectedPlantId);
+  const hasExistingPhoto = selectedPlant?.photo_url;
+  const isPending = uploadDiagnosis.isPending || textDiagnosis.isPending;
 
   const handlePlantSelect = (plantId) => {
     setSelectedPlantId(String(plantId));
+    setSelectedFile(null);
+    setPreviewUrl(null);
     setDiagnosisResult(null);
     uploadSectionRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
@@ -62,22 +68,37 @@ export default function DiagnosisSelectPage() {
   };
 
   const handleSubmit = async () => {
-    if (!selectedFile || !description.trim() || !selectedPlantId) {
+    if (!description.trim() || !selectedPlantId) {
       return;
     }
 
-    const formData = new FormData();
-    formData.append('file', selectedFile);
-    formData.append('description', description);
+    const plantId = parseInt(selectedPlantId);
 
-    uploadDiagnosis.mutate(
-      { plantId: parseInt(selectedPlantId), formData },
-      {
-        onSuccess: (data) => {
-          setDiagnosisResult(data);
-        },
-      }
-    );
+    if (selectedFile) {
+      // Use upload diagnosis with new photo
+      const formData = new FormData();
+      formData.append('file', selectedFile);
+      formData.append('description', description);
+
+      uploadDiagnosis.mutate(
+        { plantId, formData },
+        {
+          onSuccess: (data) => {
+            setDiagnosisResult(data);
+          },
+        }
+      );
+    } else {
+      // Use text-only diagnosis with existing plant photo
+      textDiagnosis.mutate(
+        { plantId, description },
+        {
+          onSuccess: (data) => {
+            setDiagnosisResult(data);
+          },
+        }
+      );
+    }
   };
 
   const handleReset = () => {
@@ -136,13 +157,63 @@ export default function DiagnosisSelectPage() {
       {/* Upload Section */}
       <Paper ref={uploadSectionRef} elevation={3} sx={{ p: 3, mb: 4 }}>
         <Typography variant="h5" gutterBottom>
-          Upload Photo & Describe Problem
+          Describe the Problem
         </Typography>
         <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-          Take a photo of your plant showing the problem and describe what you're seeing.
+          {selectedPlant
+            ? `Describe what's wrong with ${selectedPlant.name}. You can use the existing photo or upload a new one.`
+            : 'Select a plant below, then describe the problem you\'re seeing.'}
         </Typography>
 
-        {/* File Upload Buttons */}
+        {/* Show existing plant photo or uploaded photo */}
+        {(previewUrl || (hasExistingPhoto && !selectedFile)) && (
+          <Box sx={{ position: 'relative', mb: 3 }}>
+            <Box
+              component="img"
+              src={previewUrl || getPhotoUrl(selectedPlant?.photo_url)}
+              alt={selectedPlant?.name || 'Preview'}
+              sx={{
+                width: '100%',
+                maxHeight: 300,
+                objectFit: 'contain',
+                borderRadius: 2,
+                border: '2px solid',
+                borderColor: previewUrl ? 'primary.main' : 'success.main',
+              }}
+            />
+            <Typography
+              variant="caption"
+              sx={{
+                position: 'absolute',
+                bottom: 8,
+                left: 8,
+                bgcolor: previewUrl ? 'primary.main' : 'success.main',
+                color: 'white',
+                px: 1,
+                py: 0.5,
+                borderRadius: 1,
+              }}
+            >
+              {previewUrl ? 'New Photo' : 'Existing Photo'}
+            </Typography>
+            {previewUrl && (
+              <Button
+                size="small"
+                onClick={() => {
+                  setSelectedFile(null);
+                  setPreviewUrl(null);
+                }}
+                sx={{ position: 'absolute', top: 8, right: 8 }}
+                variant="contained"
+                color="inherit"
+              >
+                Use Existing
+              </Button>
+            )}
+          </Box>
+        )}
+
+        {/* File Upload Buttons - optional */}
         <Box sx={{ mb: 3 }}>
           <input
             accept="image/*"
@@ -160,14 +231,17 @@ export default function DiagnosisSelectPage() {
             onChange={handleFileSelect}
           />
 
-          <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+            {hasExistingPhoto ? 'Optionally upload a new photo:' : 'Upload a photo (optional if plant has existing image):'}
+          </Typography>
+          <Box sx={{ display: 'flex', gap: 2 }}>
             <label htmlFor="camera-upload" style={{ flex: 1 }}>
               <Button
-                variant="contained"
+                variant="outlined"
                 component="span"
                 startIcon={<CameraIcon />}
                 fullWidth
-                size="large"
+                size="small"
               >
                 Take Photo
               </Button>
@@ -178,39 +252,12 @@ export default function DiagnosisSelectPage() {
                 component="span"
                 startIcon={<GalleryIcon />}
                 fullWidth
-                size="large"
+                size="small"
               >
-                Choose from Gallery
+                Gallery
               </Button>
             </label>
           </Box>
-
-          {previewUrl && (
-            <Box sx={{ position: 'relative', mb: 2 }}>
-              <Box
-                component="img"
-                src={previewUrl}
-                alt="Preview"
-                sx={{
-                  width: '100%',
-                  maxHeight: 300,
-                  objectFit: 'contain',
-                  borderRadius: 2,
-                  border: '1px solid',
-                  borderColor: 'divider',
-                }}
-              />
-              <Button
-                size="small"
-                onClick={handleReset}
-                sx={{ position: 'absolute', top: 8, right: 8 }}
-                variant="contained"
-                color="inherit"
-              >
-                Change
-              </Button>
-            </Box>
-          )}
         </Box>
 
         {/* Plant Selection */}
@@ -249,11 +296,11 @@ export default function DiagnosisSelectPage() {
           size="large"
           fullWidth
           onClick={handleSubmit}
-          disabled={!selectedFile || !description.trim() || !selectedPlantId || uploadDiagnosis.isPending}
-          startIcon={uploadDiagnosis.isPending ? <CircularProgress size={20} /> : <SearchIcon />}
+          disabled={!description.trim() || !selectedPlantId || isPending}
+          startIcon={isPending ? <CircularProgress size={20} /> : <SearchIcon />}
           color="error"
         >
-          {uploadDiagnosis.isPending ? 'Searching for Solutions...' : 'Get Diagnosis'}
+          {isPending ? 'Searching for Solutions...' : 'Get Diagnosis'}
         </Button>
 
         {plants.length === 0 && (

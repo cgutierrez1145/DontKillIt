@@ -202,6 +202,17 @@ export const diagnosisAPI = {
     return response.data;
   },
 
+  textDiagnosis: async (plantId, description) => {
+    const formData = new FormData();
+    formData.append('description', description);
+    const response = await api.post(`/plants/${plantId}/diagnosis/text`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return response.data;
+  },
+
   getPlantDiagnoses: async (plantId, limit = 50) => {
     const response = await api.get(`/plants/${plantId}/diagnosis?limit=${limit}`);
     return response.data;

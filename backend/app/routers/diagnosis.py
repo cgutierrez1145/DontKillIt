@@ -101,6 +101,68 @@ async def create_diagnosis(
     }
 
 
+@router.post("/plants/{plant_id}/diagnosis/text", response_model=DiagnosisResponse, status_code=status.HTTP_201_CREATED)
+async def create_text_diagnosis(
+    plant_id: int,
+    description: str = Form(...),
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """
+    Get diagnosis solutions using only a text description and the plant's existing photo.
+
+    This endpoint:
+    1. Uses the plant's existing photo
+    2. Searches for solutions using Google Custom Search
+    3. Stores the diagnosis and solutions in the database
+    4. Returns the diagnosis results
+    """
+    # Verify plant ownership
+    plant = verify_plant_ownership(plant_id, current_user.id, db)
+
+    # Use plant's existing photo URL
+    photo_url = plant.photo_url or ""
+
+    # Create photo record (reusing the plant's photo URL)
+    photo = PlantPhoto(
+        plant_id=plant_id,
+        photo_url=photo_url,
+        description=description
+    )
+    db.add(photo)
+    db.commit()
+    db.refresh(photo)
+
+    # Search for solutions
+    search_query = f"{plant.name} {description} plant problem solution"
+    search_results = await google_search.search_plant_problem(search_query)
+
+    # Save solutions to database
+    solutions = []
+    for result in search_results:
+        solution = DiagnosisSolution(
+            photo_id=photo.id,
+            title=result['title'],
+            snippet=result.get('snippet'),
+            url=result['url'],
+            rank=result['rank']
+        )
+        db.add(solution)
+        solutions.append(solution)
+
+    db.commit()
+
+    # Refresh all solutions to get their IDs
+    for solution in solutions:
+        db.refresh(solution)
+
+    return {
+        "photo": photo,
+        "solutions": solutions,
+        "total_solutions": len(solutions)
+    }
+
+
 @router.get("/plants/{plant_id}/diagnosis", response_model=DiagnosisListResponse)
 async def get_plant_diagnoses(
     plant_id: int,

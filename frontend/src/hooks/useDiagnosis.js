@@ -27,7 +27,7 @@ export function useDiagnosis(photoId) {
   });
 }
 
-// Upload diagnosis mutation
+// Upload diagnosis mutation (with new photo)
 export function useUploadDiagnosis() {
   const queryClient = useQueryClient();
 
@@ -39,6 +39,22 @@ export function useUploadDiagnosis() {
     },
     onError: (error) => {
       toast.error(error.response?.data?.detail || 'Failed to upload diagnosis');
+    },
+  });
+}
+
+// Text-only diagnosis mutation (using existing plant photo)
+export function useTextDiagnosis() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ plantId, description }) => diagnosisAPI.textDiagnosis(plantId, description),
+    onSuccess: (data, variables) => {
+      queryClient.invalidateQueries({ queryKey: diagnosisKeys.plant(variables.plantId) });
+      toast.success('Diagnosis completed! Check the solutions below.');
+    },
+    onError: (error) => {
+      toast.error(error.response?.data?.detail || 'Failed to get diagnosis');
     },
   });
 }
