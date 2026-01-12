@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import {
   Container,
   Box,
@@ -36,6 +36,7 @@ export default function DiagnosisSelectPage() {
   const navigate = useNavigate();
   const { data, isLoading, isError, error } = usePlants();
   const uploadDiagnosis = useUploadDiagnosis();
+  const uploadSectionRef = useRef(null);
 
   const [selectedFile, setSelectedFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
@@ -44,6 +45,12 @@ export default function DiagnosisSelectPage() {
   const [diagnosisResult, setDiagnosisResult] = useState(null);
 
   const plants = data?.plants || [];
+
+  const handlePlantSelect = (plantId) => {
+    setSelectedPlantId(String(plantId));
+    setDiagnosisResult(null);
+    uploadSectionRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
 
   const handleFileSelect = (event) => {
     const file = event.target.files[0];
@@ -127,7 +134,7 @@ export default function DiagnosisSelectPage() {
       </Box>
 
       {/* Upload Section */}
-      <Paper elevation={3} sx={{ p: 3, mb: 4 }}>
+      <Paper ref={uploadSectionRef} elevation={3} sx={{ p: 3, mb: 4 }}>
         <Typography variant="h5" gutterBottom>
           Upload Photo & Describe Problem
         </Typography>
@@ -341,7 +348,7 @@ export default function DiagnosisSelectPage() {
             Or Select a Plant to Diagnose
           </Typography>
           <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-            Choose from your existing plants to go to their diagnosis page.
+            Click on a plant to select it and upload a diagnosis photo.
           </Typography>
 
           <Grid container spacing={3}>
@@ -351,6 +358,8 @@ export default function DiagnosisSelectPage() {
                   sx={{
                     height: '100%',
                     transition: 'transform 0.2s, box-shadow 0.2s',
+                    border: selectedPlantId === String(plant.id) ? 2 : 0,
+                    borderColor: 'primary.main',
                     '&:hover': {
                       transform: 'translateY(-4px)',
                       boxShadow: 6,
@@ -358,7 +367,7 @@ export default function DiagnosisSelectPage() {
                   }}
                 >
                   <CardActionArea
-                    onClick={() => navigate(`/plants/${plant.id}/diagnosis`)}
+                    onClick={() => handlePlantSelect(plant.id)}
                     sx={{ height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'stretch' }}
                   >
                     <CardMedia
@@ -378,17 +387,17 @@ export default function DiagnosisSelectPage() {
                         </Typography>
                       )}
                       <Button
-                        variant="outlined"
+                        variant={selectedPlantId === String(plant.id) ? 'contained' : 'outlined'}
                         color="error"
                         size="small"
                         startIcon={<DiagnoseIcon />}
                         sx={{ mt: 2 }}
                         onClick={(e) => {
                           e.stopPropagation();
-                          navigate(`/plants/${plant.id}/diagnosis`);
+                          handlePlantSelect(plant.id);
                         }}
                       >
-                        Diagnose
+                        {selectedPlantId === String(plant.id) ? 'Selected' : 'Diagnose'}
                       </Button>
                     </CardContent>
                   </CardActionArea>
