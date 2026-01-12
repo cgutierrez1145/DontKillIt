@@ -205,7 +205,7 @@ export const diagnosisAPI = {
   textDiagnosis: async (plantId, description) => {
     const formData = new FormData();
     formData.append('description', description);
-    const response = await api.post(`/plants/${plantId}/diagnosis/text`, formData, {
+    const response = await api.post(`/plants/${plantId}/diagnose`, formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },

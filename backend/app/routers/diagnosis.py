@@ -31,37 +31,29 @@ def verify_plant_ownership(plant_id: int, user_id: int, db: Session) -> Plant:
     return plant
 
 
-@router.post("/plants/{plant_id}/diagnosis", response_model=DiagnosisResponse, status_code=status.HTTP_201_CREATED)
-async def create_diagnosis(
+@router.post("/plants/{plant_id}/diagnose", response_model=DiagnosisResponse, status_code=status.HTTP_201_CREATED)
+async def create_text_diagnosis(
     plant_id: int,
-    file: UploadFile = File(...),
     description: str = Form(...),
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
     """
-    Upload a photo and get diagnosis solutions for a plant problem.
+    Get diagnosis solutions using only a text description and the plant's existing photo.
 
     This endpoint:
-    1. Saves the uploaded photo
+    1. Uses the plant's existing photo
     2. Searches for solutions using Google Custom Search
-    3. Stores the photo and solutions in the database
+    3. Stores the diagnosis and solutions in the database
     4. Returns the diagnosis results
     """
     # Verify plant ownership
     plant = verify_plant_ownership(plant_id, current_user.id, db)
 
-    # Validate file type
-    if not file.content_type or not file.content_type.startswith('image/'):
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="File must be an image"
-        )
+    # Use plant's existing photo URL
+    photo_url = plant.photo_url or ""
 
-    # Save the photo
-    photo_url = await photo_storage.save_photo(file, plant_id)
-
-    # Create photo record
+    # Create photo record (reusing the plant's photo URL)
     photo = PlantPhoto(
         plant_id=plant_id,
         photo_url=photo_url,
@@ -101,29 +93,37 @@ async def create_diagnosis(
     }
 
 
-@router.post("/plants/{plant_id}/diagnosis/text", response_model=DiagnosisResponse, status_code=status.HTTP_201_CREATED)
-async def create_text_diagnosis(
+@router.post("/plants/{plant_id}/diagnosis", response_model=DiagnosisResponse, status_code=status.HTTP_201_CREATED)
+async def create_diagnosis(
     plant_id: int,
+    file: UploadFile = File(...),
     description: str = Form(...),
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
     """
-    Get diagnosis solutions using only a text description and the plant's existing photo.
+    Upload a photo and get diagnosis solutions for a plant problem.
 
     This endpoint:
-    1. Uses the plant's existing photo
+    1. Saves the uploaded photo
     2. Searches for solutions using Google Custom Search
-    3. Stores the diagnosis and solutions in the database
+    3. Stores the photo and solutions in the database
     4. Returns the diagnosis results
     """
     # Verify plant ownership
     plant = verify_plant_ownership(plant_id, current_user.id, db)
 
-    # Use plant's existing photo URL
-    photo_url = plant.photo_url or ""
+    # Validate file type
+    if not file.content_type or not file.content_type.startswith('image/'):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="File must be an image"
+        )
 
-    # Create photo record (reusing the plant's photo URL)
+    # Save the photo
+    photo_url = await photo_storage.save_photo(file, plant_id)
+
+    # Create photo record
     photo = PlantPhoto(
         plant_id=plant_id,
         photo_url=photo_url,
