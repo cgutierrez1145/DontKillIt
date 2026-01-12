@@ -1,8 +1,39 @@
-import { Box, Container, Typography, Button, Grid, CircularProgress, Alert } from '@mui/material';
-import { Add as AddIcon, CameraAlt as CameraIcon } from '@mui/icons-material';
+import { Box, Container, Typography, Button, Grid, CircularProgress, Alert, Card, CardContent } from '@mui/material';
+import { Add as AddIcon, CameraAlt as CameraIcon, Opacity, LocalFlorist, LocalHospital, Notifications } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { usePlants } from '../hooks/usePlants';
 import PlantCard from '../components/plants/PlantCard';
+
+const features = [
+  {
+    icon: <Opacity sx={{ fontSize: 28, color: 'primary.main' }} />,
+    title: 'Smart Watering',
+    description: 'Track watering schedules and get reminders',
+    cta: 'View Schedules',
+    link: '/watering'
+  },
+  {
+    icon: <LocalFlorist sx={{ fontSize: 28, color: 'secondary.main' }} />,
+    title: 'Feeding Tracker',
+    description: 'Manage feeding schedules and history',
+    cta: 'View Feeding',
+    link: '/feeding'
+  },
+  {
+    icon: <LocalHospital sx={{ fontSize: 28, color: 'error.main' }} />,
+    title: 'Plant Diagnosis',
+    description: 'Diagnose plant problems with AI',
+    cta: 'Diagnose',
+    link: '/identify'
+  },
+  {
+    icon: <Notifications sx={{ fontSize: 28, color: 'warning.main' }} />,
+    title: 'Care Tips',
+    description: 'Get personalized care advice',
+    cta: 'View Tips',
+    link: '/care-tips'
+  }
+];
 
 export default function PlantsPage() {
   const navigate = useNavigate();
@@ -119,6 +150,38 @@ export default function PlantsPage() {
           ))}
         </Grid>
       )}
+
+      {/* Feature Cards */}
+      <Box sx={{ mt: 6 }}>
+        <Typography variant="h6" gutterBottom textAlign="center" sx={{ mb: 3 }}>
+          Quick Actions
+        </Typography>
+        <Grid container spacing={2} justifyContent="center">
+          {features.map((feature, index) => (
+            <Grid item xs={6} sm={4} md={2.5} key={index}>
+              <Card sx={{ textAlign: 'center', height: '100%' }}>
+                <CardContent sx={{ p: 1.5, '&:last-child': { pb: 1.5 } }}>
+                  {feature.icon}
+                  <Typography variant="body2" fontWeight="medium" sx={{ mt: 0.5 }}>
+                    {feature.title}
+                  </Typography>
+                  <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 1 }}>
+                    {feature.description}
+                  </Typography>
+                  <Button
+                    variant="outlined"
+                    size="small"
+                    onClick={() => navigate(feature.link)}
+                    sx={{ fontSize: '0.7rem', py: 0.25, px: 1 }}
+                  >
+                    {feature.cta}
+                  </Button>
+                </CardContent>
+              </Card>
+            </Grid>
+          ))}
+        </Grid>
+      </Box>
     </Container>
   );
 }
