@@ -20,11 +20,47 @@ import {
   CheckCircle,
   ArrowBack,
   CameraAlt,
+  Opacity,
+  LocalFlorist,
+  LocalHospital,
+  Notifications,
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 
 export default function DashboardPreviewPage() {
   const navigate = useNavigate();
+
+  // Feature cards data
+  const features = [
+    {
+      icon: <Opacity sx={{ fontSize: 28, color: 'primary.main' }} />,
+      title: 'Smart Watering',
+      description: 'Never forget to water again with customizable schedules and reminders',
+      cta: 'Learn More',
+      link: '/preview/watering'
+    },
+    {
+      icon: <LocalFlorist sx={{ fontSize: 28, color: 'secondary.main' }} />,
+      title: 'Feeding Tracker',
+      description: 'Keep your plants healthy with feeding schedules and history',
+      cta: 'Learn More',
+      link: '/preview/feeding'
+    },
+    {
+      icon: <LocalHospital sx={{ fontSize: 28, color: 'error.main' }} />,
+      title: 'Plant Diagnosis',
+      description: 'Upload photos and get instant solutions for plant problems',
+      cta: 'Learn More',
+      link: '/preview/diagnosis'
+    },
+    {
+      icon: <Notifications sx={{ fontSize: 28, color: 'warning.main' }} />,
+      title: 'Email Reminders',
+      description: 'Get notified when your plants need care',
+      cta: 'Learn More',
+      link: '/preview/reminders'
+    }
+  ];
 
   // Mock plants data
   const mockPlants = [
@@ -220,6 +256,38 @@ export default function DashboardPreviewPage() {
           ))}
         </Grid>
       </Paper>
+
+      {/* Feature Cards */}
+      <Box sx={{ mb: 4 }}>
+        <Typography variant="h6" gutterBottom textAlign="center" sx={{ mb: 3 }}>
+          Explore Our Features
+        </Typography>
+        <Grid container spacing={2} justifyContent="center">
+          {features.map((feature, index) => (
+            <Grid item xs={6} sm={4} md={2.5} key={index}>
+              <Card sx={{ textAlign: 'center', height: '100%' }}>
+                <CardContent sx={{ p: 1.5, '&:last-child': { pb: 1.5 } }}>
+                  {feature.icon}
+                  <Typography variant="body2" fontWeight="medium" sx={{ mt: 0.5 }}>
+                    {feature.title}
+                  </Typography>
+                  <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 1 }}>
+                    {feature.description}
+                  </Typography>
+                  <Button
+                    variant="outlined"
+                    size="small"
+                    onClick={() => navigate(feature.link)}
+                    sx={{ fontSize: '0.7rem', py: 0.25, px: 1 }}
+                  >
+                    {feature.cta}
+                  </Button>
+                </CardContent>
+              </Card>
+            </Grid>
+          ))}
+        </Grid>
+      </Box>
 
       {/* Features List */}
       <Paper elevation={1} sx={{ p: 3, mb: 4, bgcolor: 'grey.50' }}>
