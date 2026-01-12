@@ -4,7 +4,7 @@ import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { CssBaseline, AppBar, Toolbar, Typography, Box, Button, IconButton, Menu, MenuItem, Divider } from '@mui/material';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from 'react-hot-toast';
-import { Spa, Login, Logout, CameraAlt, Menu as MenuIcon, WaterDrop, Grass, Lightbulb } from '@mui/icons-material';
+import { Spa, Login, Logout, CameraAlt, Menu as MenuIcon, WaterDrop, Grass, Lightbulb, Science } from '@mui/icons-material';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
@@ -24,6 +24,11 @@ import SettingsPage from './pages/SettingsPage';
 import CareTipsPage from './pages/CareTipsPage';
 import WateringSchedulePage from './pages/WateringSchedulePage';
 import FeedingSchedulePage from './pages/FeedingSchedulePage';
+import EnrichmentPage from './pages/EnrichmentPage';
+import WateringPreviewPage from './pages/WateringPreviewPage';
+import FeedingPreviewPage from './pages/FeedingPreviewPage';
+import DiagnosisPreviewPage from './pages/DiagnosisPreviewPage';
+import RemindersPreviewPage from './pages/RemindersPreviewPage';
 
 // Components
 import ProtectedRoute from './components/common/ProtectedRoute';
@@ -198,6 +203,9 @@ function Navigation() {
                 <MenuItem onClick={() => handleMenuNavigate('/feeding')}>
                   <Grass sx={{ mr: 1 }} /> Feeding Schedule
                 </MenuItem>
+                <MenuItem onClick={() => handleMenuNavigate('/enrichment')}>
+                  <Science sx={{ mr: 1 }} /> Data Enrichment
+                </MenuItem>
                 <Divider />
                 <MenuItem onClick={handleLogout}>
                   <Logout sx={{ mr: 1 }} /> Logout
@@ -244,6 +252,12 @@ function AppContent() {
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/forgot-password" element={<ForgotPasswordPage />} />
         <Route path="/reset-password" element={<ResetPasswordPage />} />
+
+        {/* Feature Preview Pages (no login required) */}
+        <Route path="/preview/watering" element={<WateringPreviewPage />} />
+        <Route path="/preview/feeding" element={<FeedingPreviewPage />} />
+        <Route path="/preview/diagnosis" element={<DiagnosisPreviewPage />} />
+        <Route path="/preview/reminders" element={<RemindersPreviewPage />} />
 
         {/* Protected routes - Plants */}
         <Route path="/plants" element={
@@ -294,6 +308,11 @@ function AppContent() {
         <Route path="/feeding" element={
           <ProtectedRoute>
             <FeedingSchedulePage />
+          </ProtectedRoute>
+        } />
+        <Route path="/enrichment" element={
+          <ProtectedRoute>
+            <EnrichmentPage />
           </ProtectedRoute>
         } />
       </Routes>

@@ -2,6 +2,8 @@ from pydantic import BaseModel, Field
 from datetime import datetime
 from typing import Optional
 
+from app.schemas.enrichment import PlantEnrichmentResponse
+
 
 class PlantBase(BaseModel):
     """Base schema for plant data."""
@@ -76,6 +78,9 @@ class PlantResponse(PlantBase):
     user_id: int
     created_at: datetime
     updated_at: datetime
+
+    # Enrichment data (optional - may not exist for all plants)
+    enrichment: Optional[PlantEnrichmentResponse] = None
 
     class Config:
         from_attributes = True

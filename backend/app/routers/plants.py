@@ -1,9 +1,10 @@
 from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 from typing import List
 from app.database import get_db
 from app.models.user import User
 from app.models.plant import Plant
+from app.models.enrichment import PlantEnrichment
 from app.schemas.plant import PlantCreate, PlantUpdate, PlantResponse, PlantListResponse
 from app.utils.auth import get_current_user
 from app.services.photo_storage import photo_storage
@@ -19,8 +20,11 @@ async def get_plants(
 ):
     """
     Get all plants for the current user.
+    Includes enrichment data if available.
     """
-    plants = db.query(Plant).filter(Plant.user_id == current_user.id).all()
+    plants = db.query(Plant).options(
+        joinedload(Plant.enrichment)
+    ).filter(Plant.user_id == current_user.id).all()
 
     return {
         "plants": plants,
@@ -37,8 +41,11 @@ async def get_plant(
     """
     Get a specific plant by ID.
     Only returns if the plant belongs to the current user.
+    Includes enrichment data if available.
     """
-    plant = db.query(Plant).filter(
+    plant = db.query(Plant).options(
+        joinedload(Plant.enrichment)
+    ).filter(
         Plant.id == plant_id,
         Plant.user_id == current_user.id
     ).first()

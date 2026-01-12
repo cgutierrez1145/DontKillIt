@@ -9,24 +9,32 @@ function HomePage() {
 
   const features = [
     {
-      icon: <Opacity sx={{ fontSize: 40, color: 'primary.main' }} />,
+      icon: <Opacity sx={{ fontSize: 28, color: 'primary.main' }} />,
       title: 'Smart Watering',
-      description: 'Never forget to water again with customizable schedules and reminders'
+      description: 'Never forget to water again with customizable schedules and reminders',
+      cta: 'Learn More',
+      link: '/preview/watering'
     },
     {
-      icon: <LocalFlorist sx={{ fontSize: 40, color: 'secondary.main' }} />,
+      icon: <LocalFlorist sx={{ fontSize: 28, color: 'secondary.main' }} />,
       title: 'Feeding Tracker',
-      description: 'Keep your plants healthy with feeding schedules and history'
+      description: 'Keep your plants healthy with feeding schedules and history',
+      cta: 'Learn More',
+      link: '/preview/feeding'
     },
     {
-      icon: <LocalHospital sx={{ fontSize: 40, color: 'error.main' }} />,
+      icon: <LocalHospital sx={{ fontSize: 28, color: 'error.main' }} />,
       title: 'Plant Diagnosis',
-      description: 'Upload photos and get instant solutions for plant problems'
+      description: 'Upload photos and get instant solutions for plant problems',
+      cta: 'Learn More',
+      link: '/preview/diagnosis'
     },
     {
-      icon: <Notifications sx={{ fontSize: 40, color: 'warning.main' }} />,
+      icon: <Notifications sx={{ fontSize: 28, color: 'warning.main' }} />,
       title: 'Email Reminders',
-      description: 'Get notified when your plants need care'
+      description: 'Get notified when your plants need care',
+      cta: 'Learn More',
+      link: '/preview/reminders'
     }
   ];
 
@@ -71,14 +79,12 @@ function HomePage() {
             <Box sx={{ display: 'flex', gap: 2, mt: 3 }}>
               <Button
                 variant="contained"
-                size="large"
                 onClick={() => navigate('/plants')}
               >
                 My Plants
               </Button>
               <Button
                 variant="outlined"
-                size="large"
                 onClick={() => navigate('/plants/add')}
               >
                 Add Plant
@@ -92,18 +98,26 @@ function HomePage() {
               <Typography variant="h4" gutterBottom textAlign="center" sx={{ mb: 4 }}>
                 Everything You Need to Keep Plants Alive
               </Typography>
-              <Grid container spacing={3}>
+              <Grid container spacing={2} justifyContent="center">
                 {features.map((feature, index) => (
-                  <Grid item xs={12} sm={6} md={3} key={index}>
-                    <Card sx={{ height: '100%', textAlign: 'center', p: 2 }}>
-                      <CardContent>
+                  <Grid item xs={6} sm={4} md={2.5} key={index}>
+                    <Card sx={{ textAlign: 'center' }}>
+                      <CardContent sx={{ p: 1.5, '&:last-child': { pb: 1.5 } }}>
                         {feature.icon}
-                        <Typography variant="h6" gutterBottom sx={{ mt: 2 }}>
+                        <Typography variant="body2" fontWeight="medium" sx={{ mt: 0.5 }}>
                           {feature.title}
                         </Typography>
-                        <Typography variant="body2" color="text.secondary">
+                        <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 1 }}>
                           {feature.description}
                         </Typography>
+                        <Button
+                          variant="outlined"
+                          size="small"
+                          onClick={() => navigate(feature.link)}
+                          sx={{ fontSize: '0.7rem', py: 0.25, px: 1 }}
+                        >
+                          {feature.cta}
+                        </Button>
                       </CardContent>
                     </Card>
                   </Grid>
@@ -122,7 +136,6 @@ function HomePage() {
               <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center', mt: 3 }}>
                 <Button
                   variant="contained"
-                  size="large"
                   startIcon={<LockOpen />}
                   onClick={() => navigate('/register')}
                 >
@@ -130,7 +143,6 @@ function HomePage() {
                 </Button>
                 <Button
                   variant="outlined"
-                  size="large"
                   onClick={() => navigate('/login')}
                 >
                   Sign In

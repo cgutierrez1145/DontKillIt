@@ -14,6 +14,7 @@ import {
 import { Edit as EditIcon, ArrowBack as BackIcon, LocationOn as LocationIcon, LocalHospital as DiagnoseIcon, Pets as PetsIcon } from '@mui/icons-material';
 import { usePlant } from '../hooks/usePlants';
 import ScheduleCard from '../components/schedules/ScheduleCard';
+import EnrichmentCard from '../components/plants/EnrichmentCard';
 import { getPhotoUrl } from '../services/api';
 
 export default function PlantDetailPage() {
@@ -164,9 +165,10 @@ export default function PlantDetailPage() {
           </Paper>
         </Grid>
 
-        {/* Right Column: Schedules */}
+        {/* Right Column: Schedules & Enrichment */}
         <Grid item xs={12} md={6}>
           <ScheduleCard plantId={parseInt(id)} />
+          <EnrichmentCard enrichment={plant.enrichment} />
         </Grid>
       </Grid>
     </Container>

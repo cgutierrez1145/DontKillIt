@@ -287,4 +287,32 @@ export const notificationsAPI = {
   },
 };
 
+// Enrichment API calls
+export const enrichmentAPI = {
+  getStats: async () => {
+    const response = await api.get('/enrichment/stats');
+    return response.data;
+  },
+
+  triggerEnrichment: async (maxPlants = null) => {
+    const params = maxPlants ? { max_plants: maxPlants } : {};
+    const response = await api.post('/enrichment/trigger', null, { params });
+    return response.data;
+  },
+
+  getLogs: async (limit = 10) => {
+    const response = await api.get('/enrichment/logs', {
+      params: { limit }
+    });
+    return response.data;
+  },
+
+  getCachedSpecies: async (search = null, limit = 20) => {
+    const params = { limit };
+    if (search) params.search = search;
+    const response = await api.get('/enrichment/cache', { params });
+    return response.data;
+  },
+};
+
 export default api;

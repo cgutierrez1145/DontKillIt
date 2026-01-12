@@ -45,5 +45,14 @@ class Plant(Base):
     # Relationship to user
     # user = relationship("User", back_populates="plants")
 
+    # Relationship to enrichment data
+    enrichment = relationship(
+        "PlantEnrichment",
+        uselist=False,
+        backref="plant",
+        cascade="all, delete-orphan",
+        lazy="joined"
+    )
+
     def __repr__(self):
         return f"<Plant(id={self.id}, name={self.name}, user_id={self.user_id})>"

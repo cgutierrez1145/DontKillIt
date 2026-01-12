@@ -54,6 +54,13 @@ frontend/
 
 6. **Edit Pages Need All Features**: When creating an edit page, include all relevant management sections (like ScheduleCard for watering/feeding), not just the form.
 
+7. **Data Enrichment Integration Pattern**: When adding enrichment data to existing models:
+   - Create a Pydantic schema for enrichment response
+   - Add SQLAlchemy relationship with `lazy="joined"` for automatic loading
+   - Use `joinedload()` in queries for explicit eager loading
+   - Include optional enrichment field in parent response schema
+   - Create a dedicated card component to display enrichment data
+
 ## Roadmap
 
 ### Completed
@@ -64,10 +71,11 @@ frontend/
 - [x] Delete confirmation dialogs
 - [x] Schedule validation (1-30 days)
 - [x] Data enrichment services (Perenual API)
+- [x] Data enrichment frontend integration (EnrichmentPage, EnrichmentCard)
+- [x] WebSocket real-time notifications
 
 ### In Progress
-- [ ] Data enrichment job integration
-- [ ] WebSocket real-time notifications
+- [ ] (none)
 
 ### Future Enhancements
 - [ ] Smart watering suggestions based on plant type
