@@ -29,6 +29,7 @@ import WateringPreviewPage from './pages/WateringPreviewPage';
 import FeedingPreviewPage from './pages/FeedingPreviewPage';
 import DiagnosisPreviewPage from './pages/DiagnosisPreviewPage';
 import RemindersPreviewPage from './pages/RemindersPreviewPage';
+import DashboardPreviewPage from './pages/DashboardPreviewPage';
 
 // Components
 import ProtectedRoute from './components/common/ProtectedRoute';
@@ -258,6 +259,7 @@ function AppContent() {
         <Route path="/preview/feeding" element={<FeedingPreviewPage />} />
         <Route path="/preview/diagnosis" element={<DiagnosisPreviewPage />} />
         <Route path="/preview/reminders" element={<RemindersPreviewPage />} />
+        <Route path="/preview/dashboard" element={<DashboardPreviewPage />} />
 
         {/* Protected routes - Plants */}
         <Route path="/plants" element={

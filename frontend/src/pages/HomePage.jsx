@@ -125,8 +125,19 @@ function HomePage() {
               </Grid>
             </Box>
 
+            {/* Dashboard Preview CTA */}
+            <Box sx={{ mt: 5, textAlign: 'center' }}>
+              <Button
+                variant="outlined"
+                color="primary"
+                onClick={() => navigate('/preview/dashboard')}
+              >
+                See Dashboard Preview
+              </Button>
+            </Box>
+
             {/* CTA Section */}
-            <Box sx={{ mt: 6, textAlign: 'center' }}>
+            <Box sx={{ mt: 5, textAlign: 'center' }}>
               <Typography variant="h4" gutterBottom>
                 Get Started Today
               </Typography>
