@@ -14,6 +14,7 @@ class Settings(BaseSettings):
     PLANTNET_API_KEY: str = ""
     PERENUAL_API_KEY: str = ""  # Free tier: 100 requests/day - https://perenual.com/docs/api
     RESEND_API_KEY: str = ""
+    OPENAI_API_KEY: str = ""  # For image-based plant diagnosis
 
     # JWT Authentication
     SECRET_KEY: str = "your-secret-key-change-this-in-production"

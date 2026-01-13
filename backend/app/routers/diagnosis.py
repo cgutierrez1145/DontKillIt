@@ -16,6 +16,7 @@ from app.schemas.diagnosis import (
 from app.utils.auth import get_current_user
 from app.services.photo_storage import photo_storage
 from app.services.google_search import google_search
+from app.services.image_diagnosis import image_diagnosis
 
 router = APIRouter()
 
@@ -73,11 +74,11 @@ async def create_text_diagnosis(
     db: Session = Depends(get_db)
 ):
     """
-    Get diagnosis solutions using only a text description and the plant's existing photo.
+    Get diagnosis solutions using text description and the plant's existing photo.
 
     This endpoint:
-    1. Uses the plant's existing photo
-    2. Searches for solutions using Google Custom Search
+    1. Uses AI vision to analyze the plant's existing photo
+    2. Combines image analysis with user's problem description
     3. Stores the diagnosis and solutions in the database
     4. Returns the diagnosis results
     """
@@ -100,9 +101,17 @@ async def create_text_diagnosis(
     db.commit()
     db.refresh(photo)
 
-    # Search for solutions
-    search_query = f"{plant.name} {description} plant problem solution"
-    search_results = await google_search.search_plant_problem(search_query)
+    # Use image-based diagnosis if photo exists
+    if photo_url:
+        search_results = await image_diagnosis.analyze_plant_image(
+            image_path=photo_url,
+            plant_name=plant.name or "plant",
+            user_description=description
+        )
+    else:
+        # Fallback to text-based search if no photo
+        search_query = f"{plant.name} {description} plant problem solution"
+        search_results = await google_search.search_plant_problem(search_query)
 
     # Save solutions to database
     solutions = []
@@ -111,7 +120,7 @@ async def create_text_diagnosis(
             photo_id=photo.id,
             title=result['title'],
             snippet=result.get('snippet'),
-            url=result['url'],
+            url=result.get('url', ''),
             rank=result['rank']
         )
         db.add(solution)
@@ -139,11 +148,11 @@ async def create_diagnosis(
     db: Session = Depends(get_db)
 ):
     """
-    Upload a photo and get diagnosis solutions for a plant problem.
+    Upload a photo and get AI-powered diagnosis for a plant problem.
 
     This endpoint:
     1. Saves the uploaded photo
-    2. Searches for solutions using Google Custom Search
+    2. Uses AI vision to analyze the image
     3. Stores the photo and solutions in the database
     4. Returns the diagnosis results
     """
@@ -173,9 +182,12 @@ async def create_diagnosis(
     db.commit()
     db.refresh(photo)
 
-    # Search for solutions
-    search_query = f"{plant.name} {description} plant problem solution"
-    search_results = await google_search.search_plant_problem(search_query)
+    # Use AI image analysis for diagnosis
+    search_results = await image_diagnosis.analyze_plant_image(
+        image_path=photo_url,
+        plant_name=plant.name or "plant",
+        user_description=description
+    )
 
     # Save solutions to database
     solutions = []
@@ -184,7 +196,7 @@ async def create_diagnosis(
             photo_id=photo.id,
             title=result['title'],
             snippet=result.get('snippet'),
-            url=result['url'],
+            url=result.get('url', ''),
             rank=result['rank']
         )
         db.add(solution)
