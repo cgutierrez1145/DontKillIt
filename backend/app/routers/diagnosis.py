@@ -31,6 +31,49 @@ def verify_plant_ownership(plant_id: int, user_id: int, db: Session) -> Plant:
     return plant
 
 
+import re
+
+def validate_description(description: str) -> None:
+    """Validate that the description contains meaningful text."""
+    trimmed = description.strip()
+
+    if not trimmed:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Description is required"
+        )
+
+    if len(trimmed) < 10:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Description must be at least 10 characters"
+        )
+
+    # Count letters
+    letter_count = len(re.findall(r'[a-zA-Z]', trimmed))
+    if letter_count < 5:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Description must contain meaningful words, not just numbers or symbols"
+        )
+
+    # Letters should make up at least 50% of non-space characters
+    non_space_chars = len(trimmed.replace(' ', ''))
+    if non_space_chars > 0 and letter_count / non_space_chars < 0.5:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Please use a natural language description"
+        )
+
+    # Check for at least 2 word-like sequences
+    words = re.findall(r'[a-zA-Z]{2,}', trimmed)
+    if len(words) < 2:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Please describe the problem in a sentence or phrase"
+        )
+
+
 @router.post("/plants/{plant_id}/diagnose", response_model=DiagnosisResponse, status_code=status.HTTP_201_CREATED)
 async def create_text_diagnosis(
     plant_id: int,
@@ -47,6 +90,9 @@ async def create_text_diagnosis(
     3. Stores the diagnosis and solutions in the database
     4. Returns the diagnosis results
     """
+    # Validate description
+    validate_description(description)
+
     # Verify plant ownership
     plant = verify_plant_ownership(plant_id, current_user.id, db)
 
@@ -110,6 +156,9 @@ async def create_diagnosis(
     3. Stores the photo and solutions in the database
     4. Returns the diagnosis results
     """
+    # Validate description
+    validate_description(description)
+
     # Verify plant ownership
     plant = verify_plant_ownership(plant_id, current_user.id, db)
 

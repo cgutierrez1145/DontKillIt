@@ -42,6 +42,7 @@ export default function DiagnosisSelectPage() {
   const [selectedFile, setSelectedFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
   const [description, setDescription] = useState('');
+  const [descriptionError, setDescriptionError] = useState('');
   const [selectedPlantId, setSelectedPlantId] = useState('');
   const [diagnosisResult, setDiagnosisResult] = useState(null);
 
@@ -49,6 +50,51 @@ export default function DiagnosisSelectPage() {
   const selectedPlant = plants.find(p => String(p.id) === selectedPlantId);
   const hasExistingPhoto = selectedPlant?.photo_url;
   const isPending = uploadDiagnosis.isPending || textDiagnosis.isPending;
+
+  // Validate description - must contain meaningful text (letters forming words)
+  const validateDescription = (text) => {
+    const trimmed = text.trim();
+
+    if (!trimmed) {
+      return 'Please describe the problem you\'re seeing';
+    }
+
+    // Must be at least 10 characters
+    if (trimmed.length < 10) {
+      return 'Please provide a more detailed description (at least 10 characters)';
+    }
+
+    // Must contain actual letters (not just numbers/symbols)
+    const letterCount = (trimmed.match(/[a-zA-Z]/g) || []).length;
+    if (letterCount < 5) {
+      return 'Please describe the problem using words, not just numbers or symbols';
+    }
+
+    // Letters should make up at least 50% of the non-space characters
+    const nonSpaceChars = trimmed.replace(/\s/g, '').length;
+    if (letterCount / nonSpaceChars < 0.5) {
+      return 'Please use a natural language description of the problem';
+    }
+
+    // Check for at least 2 word-like sequences (letters grouped together)
+    const words = trimmed.match(/[a-zA-Z]{2,}/g) || [];
+    if (words.length < 2) {
+      return 'Please describe the problem in a sentence or phrase';
+    }
+
+    return '';
+  };
+
+  const handleDescriptionChange = (e) => {
+    const value = e.target.value;
+    setDescription(value);
+    // Only show error after user has typed something substantial
+    if (value.length > 5) {
+      setDescriptionError(validateDescription(value));
+    } else {
+      setDescriptionError('');
+    }
+  };
 
   const handlePlantSelect = (plantId) => {
     setSelectedPlantId(String(plantId));
@@ -68,7 +114,14 @@ export default function DiagnosisSelectPage() {
   };
 
   const handleSubmit = async () => {
-    if (!description.trim() || !selectedPlantId) {
+    // Validate description before submitting
+    const validationError = validateDescription(description);
+    if (validationError) {
+      setDescriptionError(validationError);
+      return;
+    }
+
+    if (!selectedPlantId) {
       return;
     }
 
@@ -105,6 +158,7 @@ export default function DiagnosisSelectPage() {
     setSelectedFile(null);
     setPreviewUrl(null);
     setDescription('');
+    setDescriptionError('');
     setDiagnosisResult(null);
   };
 
@@ -286,7 +340,9 @@ export default function DiagnosisSelectPage() {
           label="Describe the problem"
           placeholder="e.g., Yellow leaves on bottom, brown spots appearing, wilting stems..."
           value={description}
-          onChange={(e) => setDescription(e.target.value)}
+          onChange={handleDescriptionChange}
+          error={!!descriptionError}
+          helperText={descriptionError || 'Describe what\'s wrong with your plant in a few words'}
           sx={{ mb: 2 }}
         />
 
@@ -296,7 +352,7 @@ export default function DiagnosisSelectPage() {
           size="large"
           fullWidth
           onClick={handleSubmit}
-          disabled={!description.trim() || !selectedPlantId || isPending}
+          disabled={!description.trim() || !!descriptionError || !selectedPlantId || isPending}
           startIcon={isPending ? <CircularProgress size={20} /> : <SearchIcon />}
           color="error"
         >
