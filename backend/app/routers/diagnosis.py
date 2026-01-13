@@ -34,7 +34,7 @@ def verify_plant_ownership(plant_id: int, user_id: int, db: Session) -> Plant:
 import re
 
 def validate_description(description: str) -> None:
-    """Validate that the description contains meaningful text."""
+    """Validate that the description contains only letters and basic punctuation."""
     trimmed = description.strip()
 
     if not trimmed:
@@ -43,29 +43,20 @@ def validate_description(description: str) -> None:
             detail="Description is required"
         )
 
+    # Only allow letters, spaces, and basic punctuation (. , ' - ! ?)
+    if re.search(r"[^a-zA-Z\s.,'\-!?]", trimmed):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Only letters and basic punctuation allowed (no numbers or special characters)"
+        )
+
     if len(trimmed) < 10:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Description must be at least 10 characters"
         )
 
-    # Count letters
-    letter_count = len(re.findall(r'[a-zA-Z]', trimmed))
-    if letter_count < 5:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Description must contain meaningful words, not just numbers or symbols"
-        )
-
-    # Letters should make up at least 50% of non-space characters
-    non_space_chars = len(trimmed.replace(' ', ''))
-    if non_space_chars > 0 and letter_count / non_space_chars < 0.5:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Please use a natural language description"
-        )
-
-    # Check for at least 2 word-like sequences
+    # Check for at least 2 words
     words = re.findall(r'[a-zA-Z]{2,}', trimmed)
     if len(words) < 2:
         raise HTTPException(

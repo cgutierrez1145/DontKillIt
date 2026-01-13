@@ -51,7 +51,7 @@ export default function DiagnosisSelectPage() {
   const hasExistingPhoto = selectedPlant?.photo_url;
   const isPending = uploadDiagnosis.isPending || textDiagnosis.isPending;
 
-  // Validate description - must contain meaningful text (letters forming words)
+  // Validate description - only letters, spaces, and basic punctuation allowed
   const validateDescription = (text) => {
     const trimmed = text.trim();
 
@@ -59,24 +59,18 @@ export default function DiagnosisSelectPage() {
       return 'Please describe the problem you\'re seeing';
     }
 
+    // Only allow letters, spaces, and basic punctuation (. , ' - !)
+    const invalidChars = trimmed.match(/[^a-zA-Z\s.,'\-!?]/g);
+    if (invalidChars) {
+      return 'Only letters and basic punctuation allowed (no numbers or special characters)';
+    }
+
     // Must be at least 10 characters
     if (trimmed.length < 10) {
       return 'Please provide a more detailed description (at least 10 characters)';
     }
 
-    // Must contain actual letters (not just numbers/symbols)
-    const letterCount = (trimmed.match(/[a-zA-Z]/g) || []).length;
-    if (letterCount < 5) {
-      return 'Please describe the problem using words, not just numbers or symbols';
-    }
-
-    // Letters should make up at least 50% of the non-space characters
-    const nonSpaceChars = trimmed.replace(/\s/g, '').length;
-    if (letterCount / nonSpaceChars < 0.5) {
-      return 'Please use a natural language description of the problem';
-    }
-
-    // Check for at least 2 word-like sequences (letters grouped together)
+    // Check for at least 2 words
     const words = trimmed.match(/[a-zA-Z]{2,}/g) || [];
     if (words.length < 2) {
       return 'Please describe the problem in a sentence or phrase';
@@ -86,11 +80,13 @@ export default function DiagnosisSelectPage() {
   };
 
   const handleDescriptionChange = (e) => {
-    const value = e.target.value;
-    setDescription(value);
-    // Only show error after user has typed something substantial
-    if (value.length > 5) {
-      setDescriptionError(validateDescription(value));
+    // Filter out invalid characters as user types
+    const filtered = e.target.value.replace(/[^a-zA-Z\s.,'\-!?]/g, '');
+    setDescription(filtered);
+
+    // Show validation errors after user has typed something
+    if (filtered.length > 5) {
+      setDescriptionError(validateDescription(filtered));
     } else {
       setDescriptionError('');
     }
