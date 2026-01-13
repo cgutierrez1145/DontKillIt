@@ -399,25 +399,33 @@ export default function DiagnosisSelectPage() {
                         {solution.rank}
                       </Typography>
                       <Box sx={{ flexGrow: 1 }}>
-                        <Link
-                          href={solution.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          underline="hover"
-                          sx={{ display: 'block', mb: 1 }}
-                        >
-                          <Typography variant="h6" component="span">
+                        {solution.url ? (
+                          <Link
+                            href={solution.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            underline="hover"
+                            sx={{ display: 'block', mb: 1 }}
+                          >
+                            <Typography variant="h6" component="span">
+                              {solution.title}
+                            </Typography>
+                          </Link>
+                        ) : (
+                          <Typography variant="h6" sx={{ mb: 1 }}>
                             {solution.title}
                           </Typography>
-                        </Link>
+                        )}
                         {solution.snippet && (
                           <Typography variant="body2" color="text.secondary">
                             {solution.snippet}
                           </Typography>
                         )}
-                        <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: 'block' }}>
-                          {new URL(solution.url).hostname}
-                        </Typography>
+                        {solution.url && (
+                          <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: 'block' }}>
+                            {new URL(solution.url).hostname}
+                          </Typography>
+                        )}
                       </Box>
                     </Box>
                   </CardContent>
@@ -426,8 +434,8 @@ export default function DiagnosisSelectPage() {
             ))}
           </Grid>
 
-          <Alert severity="info" sx={{ mt: 3 }}>
-            These are suggested solutions based on web searches. Always verify the information and consult with a plant expert if you're unsure.
+          <Alert severity="success" sx={{ mt: 3 }}>
+            These tips are based on common plant care knowledge. If problems persist, consider consulting a local plant nursery or extension service.
           </Alert>
 
           <Button
