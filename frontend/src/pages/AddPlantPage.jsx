@@ -2,6 +2,7 @@ import { Container, Box, Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { useCreatePlant } from '../hooks/usePlants';
 import PlantForm from '../components/plants/PlantForm';
+import BackButton from '../components/common/BackButton';
 
 export default function AddPlantPage() {
   const navigate = useNavigate();
@@ -17,19 +18,14 @@ export default function AddPlantPage() {
 
   return (
     <Container maxWidth="md" sx={{ py: 4 }}>
-      <Box sx={{ mb: 4 }}>
-        <Typography variant="h3" component="h1" gutterBottom>
-          Add New Plant
-        </Typography>
-        <Typography variant="body1" color="text.secondary">
-          Track a new plant in your collection
-        </Typography>
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
+        <BackButton to="/plants" />
+        <Typography variant="h4">Add New Plant</Typography>
       </Box>
-
       <PlantForm
         onSubmit={handleSubmit}
         isLoading={createPlant.isPending}
-        title="New Plant Information"
+        title="Plant Information"
       />
     </Container>
   );

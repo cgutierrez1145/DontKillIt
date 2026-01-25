@@ -30,6 +30,7 @@ import {
   Error as ErrorIcon,
   Schedule as PendingIcon,
 } from '@mui/icons-material';
+import BackButton from '../components/common/BackButton';
 import {
   useEnrichmentStats,
   useEnrichmentLogs,
@@ -110,6 +111,7 @@ export default function EnrichmentPage() {
       {/* Header */}
       <Box sx={{ mb: 4, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+          <BackButton />
           <ScienceIcon sx={{ fontSize: 40, color: 'primary.main' }} />
           <Box>
             <Typography variant="h4" component="h1">

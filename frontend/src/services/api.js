@@ -40,8 +40,10 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401) {
-      // Unauthorized - clear token and redirect to login
+    // Only redirect on 401 for protected endpoints, not for auth endpoints
+    const isAuthEndpoint = error.config?.url?.startsWith('/auth/');
+    if (error.response?.status === 401 && !isAuthEndpoint) {
+      // Unauthorized on protected endpoint - clear token and redirect to login
       localStorage.removeItem('access_token');
       localStorage.removeItem('user');
       window.location.href = '/login';

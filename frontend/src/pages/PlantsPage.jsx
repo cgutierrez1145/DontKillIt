@@ -1,10 +1,19 @@
-import { Box, Container, Typography, Button, Grid, CircularProgress, Alert, Card, CardContent } from '@mui/material';
-import { Add as AddIcon, CameraAlt as CameraIcon, Opacity, LocalFlorist, LocalHospital, Notifications } from '@mui/icons-material';
+import { useState } from 'react';
+import { Box, Container, Typography, Button, Grid, CircularProgress, Alert, Card, CardContent, ToggleButton, ToggleButtonGroup, Chip } from '@mui/material';
+import { Add as AddIcon, CameraAlt as CameraIcon, Opacity, LocalFlorist, LocalHospital, Notifications, Pets as PetsIcon, FilterList as FilterIcon } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { usePlants } from '../hooks/usePlants';
 import PlantCard from '../components/plants/PlantCard';
+import PetSafetyIndicator, { PawIcon } from '../components/common/PetSafetyIndicator';
 
 const features = [
+  {
+    icon: <PetsIcon sx={{ fontSize: 28, color: 'success.main' }} />,
+    title: 'Pet Safe Plants',
+    description: 'View plants safe for your furry friends',
+    cta: 'Filter',
+    action: 'pet-safe'
+  },
   {
     icon: <Opacity sx={{ fontSize: 28, color: 'primary.main' }} />,
     title: 'Smart Watering',
@@ -38,9 +47,24 @@ const features = [
 export default function PlantsPage() {
   const navigate = useNavigate();
   const { data, isLoading, isError, error } = usePlants();
+  const [petFilter, setPetFilter] = useState('all'); // 'all' | 'safe' | 'toxic'
 
   const handleAddPlant = () => {
     navigate('/plants/add');
+  };
+
+  const handlePetFilterChange = (event, newFilter) => {
+    if (newFilter !== null) {
+      setPetFilter(newFilter);
+    }
+  };
+
+  const handleFeatureAction = (feature) => {
+    if (feature.action === 'pet-safe') {
+      setPetFilter(petFilter === 'safe' ? 'all' : 'safe');
+    } else if (feature.link) {
+      navigate(feature.link);
+    }
   };
 
   if (isLoading) {
@@ -65,8 +89,20 @@ export default function PlantsPage() {
     );
   }
 
-  const plants = data?.plants || [];
+  const allPlants = data?.plants || [];
   const totalPlants = data?.total || 0;
+
+  // Filter plants based on pet safety
+  const plants = allPlants.filter(plant => {
+    if (petFilter === 'all') return true;
+    if (petFilter === 'safe') return plant.pet_friendly === true;
+    if (petFilter === 'toxic') return plant.pet_friendly === false;
+    return true;
+  });
+
+  // Count pet-safe and toxic plants
+  const petSafeCount = allPlants.filter(p => p.pet_friendly === true).length;
+  const toxicCount = allPlants.filter(p => p.pet_friendly === false).length;
 
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
@@ -100,8 +136,47 @@ export default function PlantsPage() {
         </Box>
       </Box>
 
-      {/* Empty State */}
-      {plants.length === 0 && (
+      {/* Pet Safety Filter */}
+      {allPlants.length > 0 && (petSafeCount > 0 || toxicCount > 0) && (
+        <Box sx={{ mb: 3, display: 'flex', alignItems: 'center', gap: 2, flexWrap: 'wrap' }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <FilterIcon fontSize="small" color="action" />
+            <Typography variant="body2" color="text.secondary">
+              Filter by pet safety:
+            </Typography>
+          </Box>
+          <ToggleButtonGroup
+            value={petFilter}
+            exclusive
+            onChange={handlePetFilterChange}
+            size="small"
+          >
+            <ToggleButton value="all">
+              All ({allPlants.length})
+            </ToggleButton>
+            <ToggleButton value="safe" sx={{ color: petFilter === 'safe' ? 'success.main' : 'inherit' }}>
+              <PetsIcon fontSize="small" sx={{ mr: 0.5 }} />
+              Pet Safe ({petSafeCount})
+            </ToggleButton>
+            <ToggleButton value="toxic" sx={{ color: petFilter === 'toxic' ? 'error.main' : 'inherit' }}>
+              <PetsIcon fontSize="small" sx={{ mr: 0.5 }} />
+              Toxic ({toxicCount})
+            </ToggleButton>
+          </ToggleButtonGroup>
+          {petFilter !== 'all' && (
+            <Chip
+              label={`Showing ${plants.length} ${petFilter === 'safe' ? 'pet-safe' : 'toxic'} plant${plants.length !== 1 ? 's' : ''}`}
+              onDelete={() => setPetFilter('all')}
+              size="small"
+              color={petFilter === 'safe' ? 'success' : 'error'}
+              variant="outlined"
+            />
+          )}
+        </Box>
+      )}
+
+      {/* Empty State - No plants at all */}
+      {allPlants.length === 0 && (
         <Box
           sx={{
             textAlign: 'center',
@@ -140,6 +215,38 @@ export default function PlantsPage() {
         </Box>
       )}
 
+      {/* Empty State - Filter resulted in no plants */}
+      {allPlants.length > 0 && plants.length === 0 && petFilter !== 'all' && (
+        <Box
+          sx={{
+            textAlign: 'center',
+            py: 6,
+            px: 2,
+            bgcolor: 'background.paper',
+            borderRadius: 2,
+            border: '2px dashed',
+            borderColor: 'divider'
+          }}
+        >
+          <PetsIcon sx={{ fontSize: 48, color: petFilter === 'safe' ? 'success.main' : 'error.main', mb: 2 }} />
+          <Typography variant="h6" gutterBottom color="text.secondary">
+            No {petFilter === 'safe' ? 'pet-safe' : 'toxic'} plants found
+          </Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+            {petFilter === 'safe'
+              ? "You don't have any plants marked as pet-safe yet."
+              : "You don't have any plants marked as toxic to pets."}
+          </Typography>
+          <Button
+            variant="outlined"
+            onClick={() => setPetFilter('all')}
+            size="small"
+          >
+            Show All Plants
+          </Button>
+        </Box>
+      )}
+
       {/* Plants Grid */}
       {plants.length > 0 && (
         <Grid container spacing={3}>
@@ -169,12 +276,13 @@ export default function PlantsPage() {
                     {feature.description}
                   </Typography>
                   <Button
-                    variant="outlined"
+                    variant={feature.action === 'pet-safe' && petFilter === 'safe' ? 'contained' : 'outlined'}
                     size="small"
-                    onClick={() => navigate(feature.link)}
+                    color={feature.action === 'pet-safe' ? 'success' : 'primary'}
+                    onClick={() => handleFeatureAction(feature)}
                     sx={{ fontSize: '0.7rem', py: 0.25, px: 1 }}
                   >
-                    {feature.cta}
+                    {feature.action === 'pet-safe' && petFilter === 'safe' ? 'Clear Filter' : feature.cta}
                   </Button>
                 </CardContent>
               </Card>

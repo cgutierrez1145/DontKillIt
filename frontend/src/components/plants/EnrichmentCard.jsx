@@ -14,7 +14,6 @@ import {
   Thermostat,
   Grass,
   Science,
-  Pets,
   Person,
   LocalFlorist,
   Public,
@@ -23,6 +22,7 @@ import {
   Build,
   Loop,
 } from '@mui/icons-material';
+import PetSafetyIndicator, { DogIcon, CatIcon, ToxicityHelpButton } from '../common/PetSafetyIndicator';
 
 const InfoItem = ({ icon, label, value, tooltip }) => {
   if (!value) return null;
@@ -204,15 +204,25 @@ export default function EnrichmentCard({ enrichment }) {
               <Typography variant="caption" color="text.secondary" display="block" sx={{ mb: 0.5 }}>
                 Toxicity
               </Typography>
-              <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+              <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', alignItems: 'center' }}>
                 {enrichment.poisonous_to_pets !== null && (
-                  <Chip
-                    size="small"
-                    icon={<Pets />}
-                    label={enrichment.poisonous_to_pets ? 'Toxic to Pets' : 'Pet Safe'}
-                    color={enrichment.poisonous_to_pets ? 'error' : 'success'}
-                    variant="outlined"
-                  />
+                  <>
+                    <Chip
+                      size="small"
+                      icon={<Box sx={{ display: 'flex', ml: 0.5 }}><DogIcon size={16} color={enrichment.poisonous_to_pets ? '#d32f2f' : '#2e7d32'} /></Box>}
+                      label={enrichment.poisonous_to_pets ? 'Toxic to Dogs' : 'Dog Safe'}
+                      color={enrichment.poisonous_to_pets ? 'error' : 'success'}
+                      variant="outlined"
+                    />
+                    <Chip
+                      size="small"
+                      icon={<Box sx={{ display: 'flex', ml: 0.5 }}><CatIcon size={16} color={enrichment.poisonous_to_pets ? '#d32f2f' : '#2e7d32'} /></Box>}
+                      label={enrichment.poisonous_to_pets ? 'Toxic to Cats' : 'Cat Safe'}
+                      color={enrichment.poisonous_to_pets ? 'error' : 'success'}
+                      variant="outlined"
+                    />
+                    <ToxicityHelpButton isSafe={!enrichment.poisonous_to_pets} size="small" />
+                  </>
                 )}
                 {enrichment.poisonous_to_humans !== null && (
                   <Chip

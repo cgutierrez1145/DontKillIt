@@ -11,10 +11,11 @@ import {
   Alert,
   IconButton,
 } from '@mui/material';
-import { Edit as EditIcon, ArrowBack as BackIcon, LocationOn as LocationIcon, LocalHospital as DiagnoseIcon, Pets as PetsIcon } from '@mui/icons-material';
+import { Edit as EditIcon, ArrowBack as BackIcon, LocationOn as LocationIcon, LocalHospital as DiagnoseIcon } from '@mui/icons-material';
 import { usePlant } from '../hooks/usePlants';
 import ScheduleCard from '../components/schedules/ScheduleCard';
 import EnrichmentCard from '../components/plants/EnrichmentCard';
+import PetSafetyIndicator from '../components/common/PetSafetyIndicator';
 import { getPhotoUrl } from '../services/api';
 
 export default function PlantDetailPage() {
@@ -142,12 +143,7 @@ export default function PlantDetailPage() {
                   <Typography variant="body2" color="text.secondary" gutterBottom>
                     Pet Safety
                   </Typography>
-                  <Chip
-                    icon={<PetsIcon />}
-                    label={plant.pet_friendly ? "Pet-Friendly" : "Toxic to Pets"}
-                    color={plant.pet_friendly ? "success" : "error"}
-                    variant="outlined"
-                  />
+                  <PetSafetyIndicator petFriendly={plant.pet_friendly} variant="detailed" size="small" />
                 </Box>
               )}
 

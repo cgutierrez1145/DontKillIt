@@ -4,7 +4,7 @@ import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { CssBaseline, AppBar, Toolbar, Typography, Box, Button, IconButton, Menu, MenuItem, Divider } from '@mui/material';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from 'react-hot-toast';
-import { Spa, Login, Logout, CameraAlt, Menu as MenuIcon, WaterDrop, Grass, Lightbulb, Science } from '@mui/icons-material';
+import { Spa, Login, Logout, CameraAlt, Menu as MenuIcon, WaterDrop, Grass, Lightbulb, Settings } from '@mui/icons-material';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
@@ -205,8 +205,8 @@ function Navigation() {
                 <MenuItem onClick={() => handleMenuNavigate('/feeding')}>
                   <Grass sx={{ mr: 1 }} /> Feeding Schedule
                 </MenuItem>
-                <MenuItem onClick={() => handleMenuNavigate('/enrichment')}>
-                  <Science sx={{ mr: 1 }} /> Data Enrichment
+                <MenuItem onClick={() => handleMenuNavigate('/settings')}>
+                  <Settings sx={{ mr: 1 }} /> Settings
                 </MenuItem>
                 <Divider />
                 <MenuItem onClick={handleLogout}>

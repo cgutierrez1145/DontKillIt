@@ -109,8 +109,8 @@ async def logout():
 @router.post("/forgot-password", response_model=ForgotPasswordResponse)
 @limiter.limit(settings.RATE_LIMIT_AUTH)
 async def forgot_password(
-    http_request: Request,
-    request: ForgotPasswordRequest,
+    request: Request,
+    data: ForgotPasswordRequest,
     db: Session = Depends(get_db)
 ):
     """
@@ -119,7 +119,7 @@ async def forgot_password(
     Generates a password reset token and sends an email with the reset link.
     """
     # Find user by email
-    user = db.query(User).filter(User.email == request.email).first()
+    user = db.query(User).filter(User.email == data.email).first()
 
     # Always return success to prevent email enumeration
     if not user:
@@ -148,14 +148,14 @@ async def forgot_password(
 
     # Determine the frontend URL for the reset link
     # Try to get from referer or use default
-    referer = http_request.headers.get("referer", "")
+    referer = request.headers.get("referer", "")
     if referer:
         # Extract base URL from referer (e.g., http://localhost:5173/forgot-password -> http://localhost:5173)
         from urllib.parse import urlparse
         parsed = urlparse(referer)
         reset_url = f"{parsed.scheme}://{parsed.netloc}/reset-password"
     else:
-        reset_url = "http://localhost:5173/reset-password"
+        reset_url = "http://10.0.0.78:5173/reset-password"
 
     # Send password reset email
     email_service.send_password_reset_email(
@@ -171,7 +171,7 @@ async def forgot_password(
 
 @router.post("/reset-password", response_model=ResetPasswordResponse)
 @limiter.limit(settings.RATE_LIMIT_AUTH)
-async def reset_password(http_request: Request, request: ResetPasswordRequest, db: Session = Depends(get_db)):
+async def reset_password(request: Request, data: ResetPasswordRequest, db: Session = Depends(get_db)):
     """
     Reset password using a reset token.
 
@@ -179,7 +179,7 @@ async def reset_password(http_request: Request, request: ResetPasswordRequest, d
     """
     # Find the reset token
     reset_token = db.query(PasswordResetToken).filter(
-        PasswordResetToken.token == request.token,
+        PasswordResetToken.token == data.token,
         PasswordResetToken.used == False
     ).first()
 
@@ -207,7 +207,7 @@ async def reset_password(http_request: Request, request: ResetPasswordRequest, d
         )
 
     # Update password
-    user.password_hash = get_password_hash(request.new_password)
+    user.password_hash = get_password_hash(data.new_password)
 
     # Mark token as used
     reset_token.used = True

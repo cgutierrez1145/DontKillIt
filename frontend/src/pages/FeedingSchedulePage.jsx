@@ -24,6 +24,7 @@ import {
   Warning as WarningIcon,
   Add as AddIcon,
 } from '@mui/icons-material';
+import BackButton from '../components/common/BackButton';
 import { usePlants } from '../hooks/usePlants';
 import {
   useFeedingSchedule,
@@ -227,6 +228,7 @@ export default function FeedingSchedulePage() {
     <Container maxWidth="md" sx={{ py: 4 }}>
       {/* Header */}
       <Box sx={{ mb: 4, display: 'flex', alignItems: 'center', gap: 2 }}>
+        <BackButton />
         <FeedIcon sx={{ fontSize: 40, color: 'secondary.main' }} />
         <Box>
           <Typography variant="h4" component="h1">

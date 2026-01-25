@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
 import {
   Container,
@@ -27,9 +27,11 @@ function RegisterPage() {
   const [error, setError] = useState('');
 
   // Redirect if already authenticated
-  if (isAuthenticated) {
-    navigate('/');
-  }
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/');
+    }
+  }, [isAuthenticated, navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();

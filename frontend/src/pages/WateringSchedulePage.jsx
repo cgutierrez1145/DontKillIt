@@ -27,6 +27,7 @@ import {
   Warning as WarningIcon,
   Add as AddIcon,
 } from '@mui/icons-material';
+import BackButton from '../components/common/BackButton';
 import { usePlants } from '../hooks/usePlants';
 import {
   useWateringSchedule,
@@ -212,6 +213,7 @@ export default function WateringSchedulePage() {
     <Container maxWidth="md" sx={{ py: 4 }}>
       {/* Header */}
       <Box sx={{ mb: 4, display: 'flex', alignItems: 'center', gap: 2 }}>
+        <BackButton />
         <WaterIcon sx={{ fontSize: 40, color: 'primary.main' }} />
         <Box>
           <Typography variant="h4" component="h1">

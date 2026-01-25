@@ -3,6 +3,7 @@ import { Container, Box, Typography, CircularProgress, Alert, Button, Grid } fro
 import { usePlant, useUpdatePlant } from '../hooks/usePlants';
 import PlantForm from '../components/plants/PlantForm';
 import ScheduleCard from '../components/schedules/ScheduleCard';
+import BackButton from '../components/common/BackButton';
 
 export default function EditPlantPage() {
   const { id } = useParams();
@@ -52,13 +53,16 @@ export default function EditPlantPage() {
 
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
-      <Box sx={{ mb: 4 }}>
-        <Typography variant="h3" component="h1" gutterBottom>
-          Edit Plant
-        </Typography>
-        <Typography variant="body1" color="text.secondary">
-          Update {plant.name}'s information
-        </Typography>
+      <Box sx={{ mb: 4, display: 'flex', alignItems: 'flex-start', gap: 2 }}>
+        <BackButton to={`/plants/${id}`} />
+        <Box>
+          <Typography variant="h3" component="h1" gutterBottom>
+            Edit Plant
+          </Typography>
+          <Typography variant="body1" color="text.secondary">
+            Update {plant.name}'s information
+          </Typography>
+        </Box>
       </Box>
 
       <Grid container spacing={3}>

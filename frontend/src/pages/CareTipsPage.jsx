@@ -16,6 +16,7 @@ import {
   ListItemIcon,
   ListItemText,
 } from '@mui/material';
+import BackButton from '../components/common/BackButton';
 import {
   ExpandMore as ExpandMoreIcon,
   WaterDrop as WaterIcon,
@@ -124,13 +125,16 @@ export default function CareTipsPage() {
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
       {/* Header */}
-      <Box sx={{ mb: 4, textAlign: 'center' }}>
-        <Typography variant="h3" component="h1" gutterBottom>
-          Plant Care Tips
-        </Typography>
-        <Typography variant="h6" color="text.secondary">
-          Essential tips to keep your plants healthy and thriving
-        </Typography>
+      <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2, mb: 4 }}>
+        <BackButton />
+        <Box sx={{ textAlign: 'center', flexGrow: 1 }}>
+          <Typography variant="h3" component="h1" gutterBottom>
+            Plant Care Tips
+          </Typography>
+          <Typography variant="h6" color="text.secondary">
+            Essential tips to keep your plants healthy and thriving
+          </Typography>
+        </Box>
       </Box>
 
       {/* Quick Tips Cards */}

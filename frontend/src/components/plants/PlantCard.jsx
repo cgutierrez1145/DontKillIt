@@ -19,6 +19,7 @@ import { Delete as DeleteIcon, Edit as EditIcon, LocationOn as LocationIcon } fr
 import { useNavigate } from 'react-router-dom';
 import { useDeletePlant } from '../../hooks/usePlants';
 import { getPhotoUrl } from '../../services/api';
+import PetSafetyIndicator from '../common/PetSafetyIndicator';
 
 export default function PlantCard({ plant }) {
   const navigate = useNavigate();
@@ -82,15 +83,17 @@ export default function PlantCard({ plant }) {
           </Typography>
         )}
 
-        {plant.plant_type && (
-          <Chip
-            label={plant.plant_type}
-            size="small"
-            color="primary"
-            variant="outlined"
-            sx={{ mb: 1 }}
-          />
-        )}
+        <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', mb: 1 }}>
+          {plant.plant_type && (
+            <Chip
+              label={plant.plant_type}
+              size="small"
+              color="primary"
+              variant="outlined"
+            />
+          )}
+          <PetSafetyIndicator petFriendly={plant.pet_friendly} variant="compact" size="small" />
+        </Box>
 
         {plant.location && (
           <Box sx={{ display: 'flex', alignItems: 'center', mt: 1 }}>
